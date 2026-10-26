@@ -4,7 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#12213a">
-<title>Rico's Integrated Home Utilities | v1.2.1</title>
+<title>Rico's Integrated Home Utilities | v1.2.2</title>
+<meta name="app-version" content="1.2.2">
 <meta name="description" content="Private household utility and fuel expense tracker for water, electricity, car, motorcycle and LPG.">
 <meta name="apple-mobile-web-app-title" content="Rico Utilities">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -53,6 +54,17 @@ body{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;paddi
  .shell{padding-top:13px}
 }
 @media(max-width:365px){.fixed-app-bar .brand .pill{display:none}}
+/* v1.2.2: same-origin, no-cost GitHub Pages update checker. */
+.update-summary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:14px 0}
+.update-version{background:#f5f8fb;border:1px solid var(--line);border-radius:12px;padding:12px;min-width:0}
+.update-version span{display:block;color:var(--muted);font-size:12px}
+.update-version strong{display:block;font-size:18px;margin-top:3px;overflow-wrap:anywhere}
+.update-status{margin:12px 0 0;border-radius:11px;background:#f2f6fa;padding:11px 12px;color:#42566a;font-size:13px}
+.update-status.ready{background:#e4f8ef;color:#116946}
+.update-status.new{background:#fff2d8;color:#755105}
+.update-status.error{background:#fff0f0;color:#963838}
+.update-panel .actions{align-items:center}
+@media(max-width:370px){.update-summary{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -63,11 +75,11 @@ body{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;paddi
 </div>
 <main class="shell">
 <div id="app"></div>
-<footer class="app-footer" aria-label="Application information"><span>Rico's Integrated Home Utilities</span><span id="appVersion">Version 1.2.1</span></footer>
+<footer class="app-footer" aria-label="Application information"><span>Rico's Integrated Home Utilities</span><span id="appVersion">Version 1.2.2</span></footer>
 </main><div id="toast" class="message" role="status" aria-live="polite"></div>
 <script>
 (()=>{'use strict';
-const APP_VERSION='1.2.1';
+const APP_VERSION='1.2.2';
 const appBar=document.getElementById('fixedAppBar');
 function syncAppBarHeight(){if(appBar)document.documentElement.style.setProperty('--app-bar-height',Math.ceil(appBar.getBoundingClientRect().height)+'px')}
 syncAppBarHeight();
@@ -104,7 +116,7 @@ const qty=r=>{if(r.type==='electricity'||r.type==='water')return r.current!==nul
 const typeOptions=(all=false)=>`${all?'<option value="all">All categories</option>':''}`+Object.entries(TYPES).map(([k,v])=>`<option value="${k}">${v.icon} ${v.name}</option>`).join('');
 const sixMonths=()=>{const d=new Date(),out=[];for(let i=5;i>=0;i--){const s=new Date(d.getFullYear(),d.getMonth()-i,1);out.push([s.getFullYear(),String(s.getMonth()+1).padStart(2,'0')].join('-'))}return out};
 function go(next){page=next;render();window.scrollTo({top:0,behavior:'smooth'})}
-function render(){document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.page===page));$('#app').innerHTML=page==='overview'?overview():page==='records'?recordsPage():page==='add'?formPage():page==='insights'?insights():page==='calculations'?calculationsPage():page==='ai'?aiPage():backupPage();if(page==='add')initForm();if(page==='records')initFilters();if(page==='ai')initAi();if(page==='calculations')initCalculations()}
+function render(){document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.page===page));$('#app').innerHTML=page==='overview'?overview():page==='records'?recordsPage():page==='add'?formPage():page==='insights'?insights():page==='calculations'?calculationsPage():page==='ai'?aiPage():backupPage();if(page==='add')initForm();if(page==='records')initFilters();if(page==='ai')initAi();if(page==='calculations')initCalculations();if(page==='backup'){updateUpdateDisplay();if(!updateAutoChecked){updateAutoChecked=true;checkForUpdates()}}}
 function overview(){const m=monthNow(),cur=monthRecords(m),lastDate=new Date();lastDate.setMonth(lastDate.getMonth()-1);const prevKey=`${lastDate.getFullYear()}-${String(lastDate.getMonth()+1).padStart(2,'0')}`,prev=total(monthRecords(prevKey)),curCost=total(cur),unpaid=db.records.filter(r=>(r.type==='electricity'||r.type==='water')&&r.status==='unpaid'),unpaidTotal=total(unpaid),months=sixMonths(),vals=months.map(k=>total(monthRecords(k))),max=Math.max(...vals,1),recent=ordered(db.records).slice(0,5);
 return `<div class="topline"><div><h2>Household Overview</h2><div class="muted fine">${monthLabel(m)} · Combined monitoring</div></div><button class="btn primary" data-action="new">+ Add Expense / Reading</button></div>
 <div class="kpis"><div class="kpi accent"><div class="label">This month's spending</div><div class="value">${money(curCost)}</div><div class="foot">${cur.length} record(s)</div></div><div class="kpi"><div class="label">Previous month's spending</div><div class="value">${money(prev)}</div><div class="foot">${monthLabel(prevKey)}</div></div><div class="kpi"><div class="label">Outstanding utility bills</div><div class="value">${money(unpaidTotal)}</div><div class="foot">${unpaid.length} unpaid electricity/water bill(s)</div></div><div class="kpi"><div class="label">All-time spending</div><div class="value">${money(total(db.records))}</div><div class="foot">${db.records.length} total record(s)</div></div></div>
@@ -157,7 +169,67 @@ async function importDailyCSV(){const file=$('#dailyCsvFile')?.files?.[0];if(!fi
 function exportDailyCSV(){const values=[...db.dailyReadings].sort((a,b)=>a.date.localeCompare(b.date));download('electric-daily-readings-'+today()+'.csv','Date,Morning Reading\r\n'+values.map(r=>`${r.date},${r.reading}`).join('\r\n'),'text/csv;charset=utf-8');notice(`Exported ${values.length} daily meter reading(s)`)}
 function deleteDaily(date){const old=db.dailyReadings,existing=old.find(x=>x.date===date);if(!existing||!confirm(`Delete daily electric reading of ${num(existing.reading)} for ${dateLabel(date)}?`))return;db.dailyReadings=old.filter(x=>x.date!==date);if(!save()){db.dailyReadings=old;return}render();notice('Daily reading deleted')}
 
-function backupPage(){return `<div class="topline"><h2>Backup, Restore & Privacy</h2></div><div class="split"><div class="panel"><h3>📦 Protect your data</h3><p class="muted">Records are stored in this device's browser storage, not on GitHub. Clearing site data, changing browsers, or losing your device may erase local records.</p><p><b>${db.records.length}</b> utility record(s) and <b>${db.dailyReadings.length}</b> daily electricity reading(s) on this device.</p><div class="actions"><button class="btn primary" data-action="export-json">Download JSON Backup</button><button class="btn outline" data-action="export-csv">Export Bills CSV</button><button class="btn outline" data-action="export-daily">Export Daily Readings CSV</button></div><div class="footnote">Back up regularly and keep your JSON file somewhere safe (such as iCloud Drive).</div></div><div class="panel"><h3>📥 Restore JSON backup</h3><div class="field"><label for="restoreFile">Select a backup file</label><input type="file" id="restoreFile" accept=".json,application/json"></div><div class="field" style="margin-top:12px"><label for="importMode">Import mode</label><select id="importMode"><option value="merge">Merge (keep existing records; match by ID)</option><option value="replace">Replace all local records</option></select></div><button class="btn ghost" data-action="import-json" style="margin-top:14px">Import Backup</button><div class="footnote">CSV is for spreadsheets; this app's JSON backups restore bills and, from v1.2 onward, daily meter readings. Older backups are still supported.</div></div></div><div class="panel"><h3>🌐 GitHub Pages hosting</h3><p class="muted">Publishing this single <code>index.html</code> file makes the app accessible at your GitHub Pages URL. The app code is public, but your saved records remain in the browser unless you export and share them.</p><p class="muted">Your phone and computer will maintain separate records. To move records between them, export JSON on one and import it on the other. Using private browsing or clearing website data can remove stored records.</p><div class="actions"><button class="btn danger" data-action="clear">Erase all records on this device</button></div></div>`}
+function backupPage(){return `<div class="topline"><h2>Backup, Restore & Privacy</h2></div><div class="split"><div class="panel"><h3>📦 Protect your data</h3><p class="muted">Records are stored in this device's browser storage, not on GitHub. Clearing site data, changing browsers, or losing your device may erase local records.</p><p><b>${db.records.length}</b> utility record(s) and <b>${db.dailyReadings.length}</b> daily electricity reading(s) on this device.</p><div class="actions"><button class="btn primary" data-action="export-json">Download JSON Backup</button><button class="btn outline" data-action="export-csv">Export Bills CSV</button><button class="btn outline" data-action="export-daily">Export Daily Readings CSV</button></div><div class="footnote">Back up regularly and keep your JSON file somewhere safe (such as iCloud Drive).</div></div><div class="panel"><h3>📥 Restore JSON backup</h3><div class="field"><label for="restoreFile">Select a backup file</label><input type="file" id="restoreFile" accept=".json,application/json"></div><div class="field" style="margin-top:12px"><label for="importMode">Import mode</label><select id="importMode"><option value="merge">Merge (keep existing records; match by ID)</option><option value="replace">Replace all local records</option></select></div><button class="btn ghost" data-action="import-json" style="margin-top:14px">Import Backup</button><div class="footnote">CSV is for spreadsheets; this app's JSON backups restore bills and, from v1.2 onward, daily meter readings. Older backups are still supported.</div></div></div><div class="panel update-panel"><h3>🔄 Check App Updates</h3><p class="muted">Check the version currently published on your GitHub Pages website, including when using the home-screen shortcut on your iPhone.</p><div class="update-summary"><div class="update-version"><span>Installed on this device</span><strong id="installedUpdateVersion">v${APP_VERSION}</strong></div><div class="update-version"><span>Latest on GitHub Pages</span><strong id="latestUpdateVersion">Not checked</strong></div></div><div id="updateStatus" class="update-status" role="status" aria-live="polite">Select Check Updates to compare with the published app.</div><div class="actions"><button class="btn primary" type="button" id="checkUpdatesBtn" data-action="check-updates">Check Updates</button><button class="btn" type="button" id="applyUpdateBtn" data-action="apply-update" hidden>Update Now</button></div><div class="footnote" id="updateCheckedAt"></div><div class="footnote">Requires an internet connection and a newer <code>index.html</code> already published at this same GitHub Pages address. Updating refreshes the app code only. Your locally stored records are not deleted. Export a JSON backup before updating. If the iPhone home-screen app keeps showing the old version, use Check Updates again while online.</div></div><div class="panel"><h3>🌐 GitHub Pages hosting</h3><p class="muted">Publishing this single <code>index.html</code> file makes the app accessible at your GitHub Pages URL. The app code is public, but your saved records remain in the browser unless you export and share them.</p><p class="muted">Your phone and computer will maintain separate records. To move records between them, export JSON on one and import it on the other. Using private browsing or clearing website data can remove stored records.</p><div class="actions"><button class="btn danger" data-action="clear">Erase all records on this device</button></div></div>`}
+// Update checker fetches the deployed HTML with cache bypass. No API key,
+// service worker, new server, or browser-storage migration is required.
+let updates={state:'idle',latest:'',checkedAt:'',message:''},updateBusy=false,updateAutoChecked=false;
+function compareAppVersions(a,b){
+ const va=String(a).split('.').map(Number),vb=String(b).split('.').map(Number);
+ for(let i=0;i<3;i++){if((va[i]||0)>(vb[i]||0))return 1;if((va[i]||0)<(vb[i]||0))return -1}
+ return 0;
+}
+function updateUpdateDisplay(){
+ const current=$('#installedUpdateVersion'),latest=$('#latestUpdateVersion'),status=$('#updateStatus'),when=$('#updateCheckedAt');
+ if(!current||!latest||!status)return;
+ current.textContent='v'+APP_VERSION;
+ latest.textContent=updates.latest?'v'+updates.latest:(updates.state==='checking'?'Checking…':'Not checked');
+ status.className='update-status'+(updates.state==='available'?' new':updates.state==='current'?' ready':updates.state==='error'?' error':'');
+ status.textContent=updates.message||'Select Check Updates to compare with the published app.';
+ const check=$('#checkUpdatesBtn'),apply=$('#applyUpdateBtn');
+ if(check){check.disabled=updateBusy;check.textContent=updateBusy?'Checking…':'Check Updates'}
+ if(apply){apply.hidden=updates.state!=='available'||!updates.latest;apply.disabled=updateBusy;apply.textContent='Update Now to v'+(updates.latest||'')}
+ if(when)when.textContent=updates.checkedAt?'Last checked: '+updates.checkedAt:'';
+ const backupTab=document.querySelector('[data-page="backup"]');
+ if(backupTab){backupTab.classList.toggle('has-update',updates.state==='available');backupTab.title=updates.state==='available'?'New version v'+updates.latest+' is available':''}
+}
+async function checkForUpdates(){
+ if(updateBusy)return;
+ if(!/^https?:$/.test(location.protocol)){
+   updates={state:'error',latest:'',checkedAt:'',message:'Open your deployed GitHub Pages app to check for updates. A local file cannot check a published version.'};updateUpdateDisplay();return;
+ }
+ if(navigator.onLine===false){updates={state:'error',latest:'',checkedAt:'',message:'You appear to be offline. Connect to the internet and try again.'};updateUpdateDisplay();return}
+ updateBusy=true;updates={state:'checking',latest:'',checkedAt:'',message:'Checking the live GitHub Pages version…'};updateUpdateDisplay();
+ try{
+   const url=new URL('index.html',location.href);
+   url.search='';url.hash='';url.searchParams.set('_rico_check',String(Date.now()));
+   const response=await fetch(url.href,{cache:'no-store',credentials:'same-origin',headers:{'Cache-Control':'no-cache'}});
+   if(!response.ok)throw new Error('The website returned HTTP '+response.status+'.');
+   const html=await response.text();
+   const doc=new DOMParser().parseFromString(html,'text/html');
+   const meta=doc.querySelector('meta[name="app-version"]');
+   const fallback=html.match(/const\s+APP_VERSION\s*=\s*['"](\d+\.\d+\.\d+)['"]/);
+   const latest=(meta?.getAttribute('content')||fallback?.[1]||'').trim();
+   if(!/^\d+\.\d+\.\d+$/.test(latest)||!html.includes('rico-utility-monitor-v1'))throw new Error('Could not verify the published Rico Utilities app version.');
+   const checkedAt=new Date().toLocaleString('en-PH',{dateStyle:'medium',timeStyle:'short'});
+   const comparison=compareAppVersions(latest,APP_VERSION);
+   updates=comparison>0
+     ?{state:'available',latest,checkedAt,message:'A newer version is published! Back up your records, then tap Update Now to install v'+latest+'.'}
+     :comparison===0
+     ?{state:'current',latest,checkedAt,message:'You have the latest published version. Your home-screen app is up to date.'}
+     :{state:'current',latest,checkedAt,message:'This device has v'+APP_VERSION+', which is newer than the currently published website (v'+latest+'). No update is needed.'};
+ }catch(err){updates={state:'error',latest:'',checkedAt:'',message:'Could not check updates. Make sure GitHub Pages is reachable, then try again. '+String(err?.message||err).slice(0,140)}}
+ finally{updateBusy=false;updateUpdateDisplay()}
+}
+function applyAvailableUpdate(){
+ if(updates.state!=='available'||!updates.latest||updateBusy)return;
+ if(!confirm('Update this app to v'+updates.latest+' now?\n\nYour saved records will remain in this browser. For safety, download a JSON backup first if you have not done so.'))return;
+ // A new same-origin document URL avoids a stale Safari/iPhone home-screen
+ // HTML cache. Never clear localStorage or unrelated browser caches.
+ const url=new URL('index.html',location.href);
+ url.search='';url.hash='';url.searchParams.set('_rico_updated',updates.latest);
+ url.searchParams.set('_rico_refresh',String(Date.now()));
+ location.replace(url.href);
+}
 function download(name,contents,type){const blob=new Blob([contents],{type});const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000)}
 function exportJSON(){download('rico-utility-backup-'+today()+'.json',JSON.stringify({app:'Rico Utility Monitor',version:2,exportedAt:new Date().toISOString(),records:db.records,dailyReadings:db.dailyReadings},null,2),'application/json');notice('JSON backup downloaded')}
 function exportCSV(){const cols=['id','type','date','period','startDate','previous','current','liters','odometer','kg','amount','billedAmount','due','status','note','createdAt','updatedAt'];const cell=x=>{let s=x==null?'':String(x);if(/^[=+\-@\t\r]/.test(s))s="'"+s;return '"'+s.replace(/"/g,'""')+'"'};download('rico-utility-records-'+today()+'.csv','\ufeff'+cols.join(',')+'\r\n'+ordered(db.records).map(r=>cols.map(c=>cell(r[c])).join(',')).join('\r\n'),'text/csv;charset=utf-8');notice('CSV exported')}
@@ -240,7 +312,7 @@ async function explainWithNative(){if(aiNativeBusy)return;if(!aiResponse){aiNati
  const result=await session.prompt(instruction);aiNativeText=String(result||'No explanation returned.').slice(0,3000);
 }catch(e){aiNativeText=`On-device model could not run (${String(e.message||e).slice(0,150)}). Local Ask AI remains available with no paid service.`}finally{try{session?.destroy?.()}catch{}aiNativeBusy=false;if(page==='ai'&&aiTab==='ask')render()}}
 
-document.addEventListener('click',e=>{const b=e.target.closest('[data-page],[data-action],[data-ai-tab],[data-calc-tab]');if(!b)return;if(b.dataset.calcTab){calcTab=b.dataset.calcTab;render();return}if(b.dataset.aiTab){aiTab=b.dataset.aiTab;render();return}if(b.dataset.page){if(b.dataset.page==='add')editId=null;go(b.dataset.page);return}const a=b.dataset.action,key=b.dataset.id;switch(a){case 'new':editId=null;go('add');break;case 'view-records':go('records');break;case 'view-backup':go('backup');break;case 'cancel':editId=null;go('records');break;case 'edit':editId=key;go('add');break;case 'delete':{const r=db.records.find(x=>x.id===key);if(r&&confirm(`Delete ${TYPES[r.type].name} record from ${dateLabel(r.date)} (${money(r.amount)})?`)){const before=db.records;db.records=db.records.filter(x=>x.id!==key);if(!save()){db.records=before;return}render();notice('Record deleted')}break}case 'toggle-paid':{const r=db.records.find(x=>x.id===key);if(r){const old=r.status;r.status=old==='paid'?'unpaid':'paid';r.updatedAt=new Date().toISOString();if(!save()){r.status=old;return}render();notice('Payment status updated')}break}case 'open-calculations':go('calculations');break;case 'import-daily':importDailyCSV();break;case 'export-daily':exportDailyCSV();break;case 'delete-daily':deleteDaily(b.dataset.date);break;case 'ai-example':aiQuestion=b.dataset.question||'';aiNativeText='';aiTab='ask';render();askAI();break;case 'ai-clear':aiQuestion='';aiResponse='';aiNativeText='';render();break;case 'ai-native':explainWithNative();break;case 'ai-refresh':render();notice('Alerts refreshed from saved records');break;case 'export-json':exportJSON();break;case 'export-csv':exportCSV();break;case 'import-json':importJSON();break;case 'clear':eraseAll();break}});
+document.addEventListener('click',e=>{const b=e.target.closest('[data-page],[data-action],[data-ai-tab],[data-calc-tab]');if(!b)return;if(b.dataset.calcTab){calcTab=b.dataset.calcTab;render();return}if(b.dataset.aiTab){aiTab=b.dataset.aiTab;render();return}if(b.dataset.page){if(b.dataset.page==='add')editId=null;go(b.dataset.page);return}const a=b.dataset.action,key=b.dataset.id;switch(a){case 'new':editId=null;go('add');break;case 'view-records':go('records');break;case 'view-backup':go('backup');break;case 'cancel':editId=null;go('records');break;case 'edit':editId=key;go('add');break;case 'delete':{const r=db.records.find(x=>x.id===key);if(r&&confirm(`Delete ${TYPES[r.type].name} record from ${dateLabel(r.date)} (${money(r.amount)})?`)){const before=db.records;db.records=db.records.filter(x=>x.id!==key);if(!save()){db.records=before;return}render();notice('Record deleted')}break}case 'toggle-paid':{const r=db.records.find(x=>x.id===key);if(r){const old=r.status;r.status=old==='paid'?'unpaid':'paid';r.updatedAt=new Date().toISOString();if(!save()){r.status=old;return}render();notice('Payment status updated')}break}case 'open-calculations':go('calculations');break;case 'import-daily':importDailyCSV();break;case 'export-daily':exportDailyCSV();break;case 'delete-daily':deleteDaily(b.dataset.date);break;case 'ai-example':aiQuestion=b.dataset.question||'';aiNativeText='';aiTab='ask';render();askAI();break;case 'ai-clear':aiQuestion='';aiResponse='';aiNativeText='';render();break;case 'ai-native':explainWithNative();break;case 'ai-refresh':render();notice('Alerts refreshed from saved records');break;case 'check-updates':checkForUpdates();break;case 'apply-update':applyAvailableUpdate();break;case 'export-json':exportJSON();break;case 'export-csv':exportCSV();break;case 'import-json':importJSON();break;case 'clear':eraseAll();break}});
 render();
 })();
 </script>
