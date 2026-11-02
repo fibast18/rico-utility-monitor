@@ -1,4 +1,4 @@
-Rico's Integrated Home Utilities – Smart Solutions v1.3.0
+Rico's Integrated Home Utilities – Smart Solutions v1.3.1
 
 UPLOAD ALL SIX FILES into the same GitHub Pages repository directory:
 - index.html
@@ -25,6 +25,10 @@ The app continues to store records only in browser localStorage using the origin
 key rico-utility-monitor-v1. Update does not clear those records. Avoid clearing
 Safari website data. Keep periodic JSON backups in a separate location.
 
-OFFLINE VERSION v1.3.0 adds auto-installed service worker, install manifest,
-network-first HTML with cached offline fallback, offline status and manual
-preparation button. All v1.2.2 features are retained.
+VERSION v1.3.1 (CUMULATIVE)
+- Adds the centered footer credit: Developed by: Engr. Rico J. Pono
+- Moves footer elements into two centered lines on all seven tabs.
+- Bumps app version metadata, on-screen version, and service-worker cache name.
+- Retains offline installation, Check Updates, AI Analyst, Ask AI, AI Advisor,
+  Billing Lab, CSV imports, all record forms, localStorage key, and JSON backups.
+- Cache update requires replacing BOTH index.html and sw.js in your repository.
