@@ -1,3 +1,22 @@
+Rico's Integrated Home Utilities v1.3.3 — Cumulative Ask Rico Data Access Upgrade
+
+NEW / FIXED
+- Ask Rico uses the actual, owner-authorized saved records rather than spending totals only.
+- Shares electricity and water billing readings, dated kWh/m³ usage, billing dates, payment data, LPG history and forecasts, and vehicle fuel logs.
+- Includes saved daily electricity meter dates and readings from Billing Lab when relevant.
+- For queries such as "kWh since October 15", computes the exact recorded difference locally if readings exist and warns if the latest reading predates today.
+- Full read-only context is sent via the existing authorized /api/chat Worker route only when the data-sharing checkbox is enabled.
+- Data sharing is visibly explained in the chat panel. The payload is capped for paid-token control, and omissions are labeled.
+- The legacy built-in AI Analyst, Ask AI, AI Advisor, all seven tabs, Backup/Restore, Check Updates, offline PWA, sticky navigation, footer credit, logo and localStorage key remain unchanged.
+- Updated HTML meta, app version, footer, service-worker cache marker to 1.3.3.
+
+IMPORTANT
+- The Cloudflare Worker continues to own the OpenAI API key. No paid keys appear in the GitHub source.
+- This is read-only permission to INCLUDE data in messages; it does not give the Worker direct access to this browser's localStorage.
+- Live paid responses and any restrictive system instructions inside the existing Worker cannot be verified from the frontend alone.
+- Export a JSON backup before deployment; replace all files including sw.js on GitHub Pages.
+
+--- PRIOR CHANGELOG ---
 Rico's Integrated Home Utilities — cumulative changes
 
 v1.3.2 (2026-11-13)
