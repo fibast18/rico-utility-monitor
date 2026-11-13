@@ -1,3 +1,13 @@
+Rico's Integrated Home Utilities v1.3.4 — Cumulative Ask Rico Data Context Fix
+
+- Fixes v1.3.3 large JSON context being truncated before key electricity facts reached the paid Worker.
+- Calculates exact start-to-last-recorded-date electricity kWh difference locally, displays a verified on-device result immediately in the Ask Rico conversation, and explains any missing dates.
+- Sends question-first, small, focused read-only app facts (typically under 1.5 KB) instead of a ~26 KB full JSON context. Important dates/reading differences are prioritized to survive backend message clipping and reduce paid OpenAI tokens.
+- Other utilities send focused amounts/quantities/latest transactions and relevant forecasts. Read-only checkbox remains the explicit control over cloud sharing. No records are sent when unchecked.
+- Paid AI chat stays enabled; Worker instructions or backend caps may still need editing for unrestricted full-archive exploration. The Worker cannot browse this app's browser storage directly.
+- Preserves all previous app tabs, offline service worker, Check Updates, logo, localStorage key, existing backups, and centered developer credit.
+- HTML version and offline service worker cache updated to v1.3.4.
+
 Rico's Integrated Home Utilities v1.3.3 — Cumulative Ask Rico Data Access Upgrade
 
 NEW / FIXED
