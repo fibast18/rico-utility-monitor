@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#12213a">
-<title>Rico's Integrated Home Utilities | v1.3.1</title>
-<meta name="app-version" content="1.3.1">
+<title>Rico's Integrated Home Utilities | v1.3.2</title>
+<meta name="app-version" content="1.3.2">
 <meta name="description" content="Private household utility and fuel expense tracker for water, electricity, car, motorcycle and LPG.">
 <meta name="apple-mobile-web-app-title" content="Rico Utilities">
 <meta name="application-name" content="Rico's Integrated Home Utilities">
@@ -43,7 +43,7 @@ body{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;paddi
 .fixed-app-bar .tabs .tab{flex:0 0 auto;padding:8px 12px}
 .shell{width:100%;flex:1;display:flex;flex-direction:column;padding-top:19px}
 #app{flex:1}
-/* v1.3.1: a centered developer credit sits directly above the app name and version on every tab. */
+/* v1.3.2: a centered developer credit sits directly above the app name and version on every tab. */
 .app-footer{margin-top:18px;border-top:1px solid var(--line);padding:17px 8px max(8px,env(safe-area-inset-bottom));display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:12px;color:var(--muted);text-align:center}
 .app-footer .developer-credit{display:block;font-weight:600;line-height:1.5}
 .app-footer .footer-release{display:flex;align-items:baseline;justify-content:center;flex-wrap:wrap;column-gap:5px;row-gap:0;line-height:1.5}
@@ -78,6 +78,42 @@ body{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;paddi
 .offline-status.error{background:#fff0f0;color:#993d3d;border-color:#f6cece}
 .offline-panel .actions{margin-top:10px}
 .offline-footnote{font-size:12px;color:var(--muted);line-height:1.6;margin-top:9px}
+
+/* v1.3.2: floating Ask Rico (paid, owner-authorized Worker) — separate from free, offline AI Center. */
+.rico-fab{position:fixed;right:max(16px,env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:230;display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:999px;padding:13px 18px;min-height:48px;background:#174c7d;color:#fff;font:700 14px system-ui,sans-serif;box-shadow:0 7px 25px rgba(10,35,66,.33);cursor:pointer}
+.rico-fab:hover{background:#0d3c68}.rico-fab:focus-visible,.rico-chat-panel button:focus-visible,.rico-chat-panel textarea:focus-visible,.rico-chat-panel input:focus-visible{outline:3px solid #e5af39;outline-offset:2px}
+.rico-chat-panel[hidden],.rico-chat-auth[hidden],.rico-chat-screen[hidden]{display:none!important}
+.rico-chat-panel{position:fixed;right:max(12px,env(safe-area-inset-right,0px));bottom:calc(76px + env(safe-area-inset-bottom,0px));z-index:229;width:min(425px,calc(100vw - 24px));height:min(640px,calc(100dvh - 115px - env(safe-area-inset-top,0px)));min-height:280px;display:flex;flex-direction:column;overflow:hidden;border-radius:20px;border:1px solid #ced8e4;background:#fff;box-shadow:0 16px 55px rgba(13,38,66,.3);color:#12213a;font:14px/1.5 system-ui,sans-serif}
+.rico-chat-head{display:flex;align-items:center;gap:10px;padding:12px 14px;background:#122c4c;color:#fff;flex:0 0 auto}
+.rico-chat-avatar{display:grid;place-items:center;width:35px;height:35px;flex:0 0 35px;border-radius:11px;background:#2b739b;font-size:20px}
+.rico-chat-head-text{flex:1;min-width:0}.rico-chat-head h2{font-size:16px;margin:0;color:#fff}.rico-chat-head p{font-size:11px;opacity:.85;margin:2px 0 0;color:#fff}
+.rico-chat-panel button{cursor:pointer;font:inherit}
+.rico-icon-btn{border:1px solid rgba(255,255,255,.35);border-radius:9px;background:rgba(255,255,255,.11);color:#fff;padding:6px 10px;min-width:34px}
+.rico-chat-auth{padding:20px 17px;overflow:auto;flex:1}
+.rico-chat-auth h3{margin:0 0 9px;font-size:17px}.rico-chat-auth p{color:#536276;font-size:13px;margin:8px 0 14px}
+.rico-chat-label{display:block;font-weight:650;margin:11px 0 6px}
+.rico-chat-input{display:block;width:100%;box-sizing:border-box;background:#fff;border:1px solid #aebccc;border-radius:10px;padding:11px;color:#142a42;font:inherit;font-size:16px}
+.rico-chat-check{display:flex;align-items:flex-start;gap:8px;margin:12px 0;font-size:12px;color:#42566e}.rico-chat-check input{flex:0 0 auto;margin-top:3px}
+.rico-chat-primary{border:0;border-radius:10px;background:#175b92;color:#fff;padding:10px 15px;font-weight:700!important;min-height:39px}.rico-chat-primary:disabled{opacity:.58;cursor:wait}
+.rico-chat-secondary{border:1px solid #becbda;background:#fff;color:#1b4467;border-radius:9px;padding:6px 9px;font-size:12px!important}
+.rico-chat-help{font-size:11px!important;color:#67778b!important;line-height:1.45!important}
+.rico-chat-status{font-size:12px;color:#3e5a73;background:#edf4fb;padding:9px 12px;border-bottom:1px solid #dae3ef;flex:0 0 auto}
+.rico-chat-status.rico-err{background:#fff1ef;color:#934838}
+.rico-chat-screen{display:flex;flex-direction:column;min-height:0;flex:1}
+.rico-chat-messages{display:flex;flex-direction:column;align-items:stretch;gap:10px;flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:13px;background:#f6f9fc}
+.rico-chat-msg{max-width:91%;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.5;padding:10px 12px;border-radius:13px;background:#fff;color:#23344b;border:1px solid #e3eaf2;align-self:flex-start}
+.rico-chat-msg.user{align-self:flex-end;background:#dcecfb;border-color:#c7dff5}
+.rico-chat-msg.note{align-self:center;background:#eef2f6;border:0;color:#52637a;font-size:12px;text-align:center}
+.rico-chat-msg.error{background:#fff0ed;border-color:#f5cdca;color:#8e3e35}
+.rico-chat-tools{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:7px 12px;background:#fff;border-top:1px solid #e6edf4}
+.rico-chat-tools span{font-size:11px;color:#6a7a90}
+.rico-chat-form{display:flex;align-items:flex-end;gap:8px;padding:10px 12px max(12px,env(safe-area-inset-bottom,0px));background:#fff}
+.rico-chat-form textarea{width:100%;min-height:44px;max-height:140px;resize:vertical;border:1px solid #aebccc;border-radius:12px;padding:10px 12px;box-sizing:border-box;font:inherit;font-size:16px;line-height:1.35;color:#142a42;background:#fff}
+.rico-chat-form button{height:43px;align-self:flex-end}
+.rico-chat-offline{margin-top:8px;font-size:12px;color:#6e5660}
+@media(max-width:530px){.rico-chat-panel{bottom:calc(68px + env(safe-area-inset-bottom,0px));right:8px;width:calc(100vw - 16px);height:min(72dvh,670px);border-radius:16px}.rico-fab{right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));padding:12px 16px}}
+@media(max-height:570px){.rico-chat-panel{height:calc(100dvh - 90px);min-height:200px}}
+
 </style>
 </head>
 <body>
@@ -88,11 +124,44 @@ body{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;paddi
 </div>
 <main class="shell">
 <div id="app"></div>
-<footer class="app-footer" aria-label="Application information"><span class="developer-credit">Developed by: Engr. Rico J. Pono</span><span class="footer-release"><span>Rico's Integrated Home Utilities</span><span id="appVersion">Version 1.3.1</span></span></footer>
-</main><div id="toast" class="message" role="status" aria-live="polite"></div>
+<footer class="app-footer" aria-label="Application information"><span class="developer-credit">Developed by: Engr. Rico J. Pono</span><span class="footer-release"><span>Rico's Integrated Home Utilities</span><span id="appVersion">Version 1.3.2</span></span></footer>
+</main>
+<!-- v1.3.2: Private Ask Rico Cloudflare Worker chat. No OpenAI API key is present in this public page. -->
+<section id="ricoChatPanel" class="rico-chat-panel" role="dialog" aria-label="Ask Rico paid AI chat" aria-modal="false" hidden>
+  <div class="rico-chat-head">
+    <span class="rico-chat-avatar" aria-hidden="true">✦</span>
+    <div class="rico-chat-head-text"><h2>Ask Rico</h2><p>Paid OpenAI via private Cloudflare Worker · Online</p></div>
+    <button type="button" id="ricoChatClose" class="rico-icon-btn" aria-label="Close Ask Rico">✕</button>
+  </div>
+  <div id="ricoChatStatus" class="rico-chat-status" role="status" aria-live="polite">Connect your private Ask Rico session to begin.</div>
+  <div id="ricoChatAuth" class="rico-chat-auth">
+    <h3>Connect to Ask Rico</h3>
+    <p>Enter the <strong>Ask Rico access code</strong> configured in your Cloudflare Worker. This is not your OpenAI API key. Your access code is never saved in this app.</p>
+    <form id="ricoChatAuthForm">
+      <label class="rico-chat-label" for="ricoChatAccessCode">Private access code</label>
+      <input class="rico-chat-input" id="ricoChatAccessCode" type="password" autocomplete="off" required maxlength="200" placeholder="Enter your Ask Rico access code">
+      <label class="rico-chat-check"><input type="checkbox" id="ricoRememberSession" checked>Remember this authorized device for up to 30 days (save only a temporary Worker token)</label>
+      <button id="ricoChatConnect" class="rico-chat-primary" type="submit">Connect securely</button>
+    </form>
+    <p class="rico-chat-help">The Worker must permit this GitHub Pages website origin. Your utility records stay on this device unless you explicitly turn on summary sharing below.</p>
+  </div>
+  <div id="ricoChatScreen" class="rico-chat-screen" hidden>
+    <div id="ricoChatMessages" class="rico-chat-messages" role="log" aria-label="Ask Rico conversation" aria-live="polite" aria-relevant="additions text"></div>
+    <label class="rico-chat-check" style="margin:0;padding:7px 12px 0"><input id="ricoShareSummary" type="checkbox">Share a limited utility spending summary with Ask Rico for this question</label>
+    <div class="rico-chat-tools"><span>Cloud questions use your paid OpenAI API.</span><div style="display:flex;gap:6px"><button type="button" class="rico-chat-secondary" id="ricoChatClear">Clear chat</button><button type="button" class="rico-chat-secondary" id="ricoChatSignOut">Disconnect</button></div></div>
+    <form id="ricoChatForm" class="rico-chat-form">
+      <label for="ricoChatInput" style="position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)">Ask Rico a question</label>
+      <textarea id="ricoChatInput" rows="1" maxlength="800" placeholder="Message Ask Rico…" required></textarea>
+      <button type="submit" class="rico-chat-primary" id="ricoChatSend">Send</button>
+    </form>
+  </div>
+</section>
+<button type="button" class="rico-fab" id="ricoChatFab" aria-controls="ricoChatPanel" aria-expanded="false"><span aria-hidden="true">✦</span> Ask Rico</button>
+
+<div id="toast" class="message" role="status" aria-live="polite"></div>
 <script>
 (()=>{'use strict';
-const APP_VERSION='1.3.1';
+const APP_VERSION='1.3.2';
 const appBar=document.getElementById('fixedAppBar');
 function syncAppBarHeight(){if(appBar)document.documentElement.style.setProperty('--app-bar-height',Math.ceil(appBar.getBoundingClientRect().height)+'px')}
 syncAppBarHeight();
@@ -398,6 +467,51 @@ async function explainWithNative(){if(aiNativeBusy)return;if(!aiResponse){aiNati
  const instruction='You are a household-utilities assistant. Explain the exact provided calculation in clear, friendly English, in no more than 130 words. Treat numbers in the source as authoritative; never invent amounts, dates, due dates or prices. Mention if a comparison uses a partial month. Provide practical advice only when relevant. Do not claim to make changes. If unsure, say what cannot be concluded.\n\n'+facts;
  const result=await session.prompt(instruction);aiNativeText=String(result||'No explanation returned.').slice(0,3000);
 }catch(e){aiNativeText=`On-device model could not run (${String(e.message||e).slice(0,150)}). Local Ask AI remains available with no paid service.`}finally{try{session?.destroy?.()}catch{}aiNativeBusy=false;if(page==='ai'&&aiTab==='ask')render()}}
+
+
+// v1.3.2: Paid Ask Rico is separate from the existing free, offline AI features.
+// The server owns the OpenAI key. Only an owner-supplied access code starts a temporary session.
+const RICO_WORKER='https://ask-rico-ledger.rjpono.workers.dev';
+const RICO_SESSION_KEY='rico-utilities-ask-rico-worker-session-v1'; // separate from utility records
+let ricoToken='',ricoTokenExpires=0,ricoChatHistory=[],ricoChatBusy=false;
+const ricoEl=id=>document.getElementById(id);
+function ricoUpdateStatus(msg,error=false){const el=ricoEl('ricoChatStatus');el.textContent=msg;el.classList.toggle('rico-err',!!error)}
+function ricoReadSession(){try{const saved=JSON.parse(localStorage.getItem(RICO_SESSION_KEY)||'null');if(saved&&typeof saved.token==='string'&&Number(saved.expiresAt)>Date.now()+20000){ricoToken=saved.token;ricoTokenExpires=Number(saved.expiresAt)}else localStorage.removeItem(RICO_SESSION_KEY)}catch(_){}}
+function ricoClearSession(){ricoToken='';ricoTokenExpires=0;try{localStorage.removeItem(RICO_SESSION_KEY)}catch(_){}}
+function ricoShowScreen(){const valid=!!ricoToken&&ricoTokenExpires>Date.now()+20000;ricoEl('ricoChatAuth').hidden=valid;ricoEl('ricoChatScreen').hidden=!valid;if(valid){ricoUpdateStatus(navigator.onLine?'Connected · Ask Rico uses paid OpenAI':'Offline · paid Ask Rico needs internet; the built-in AI Center still works offline');ricoRenderMessages()}else ricoUpdateStatus('Enter the private Worker access code to connect.');}
+function ricoToggle(open){const box=ricoEl('ricoChatPanel');box.hidden=!open;ricoEl('ricoChatFab').setAttribute('aria-expanded',String(open));if(open){ricoReadSession();ricoShowScreen();setTimeout(()=>{(ricoEl(ricoToken?'ricoChatInput':'ricoChatAccessCode'))?.focus({preventScroll:true})},0)}else ricoEl('ricoChatFab').focus({preventScroll:true})}
+function ricoRenderMessages(){const area=ricoEl('ricoChatMessages');area.replaceChildren();if(!ricoChatHistory.length){const note=document.createElement('div');note.className='rico-chat-msg note';note.textContent='Hello! Ask me a question. Your recorded utilities are not sent to the cloud unless you enable the summary checkbox.';area.append(note)}for(const msg of ricoChatHistory){const node=document.createElement('div');node.className='rico-chat-msg '+(msg.role==='user'?'user':'assistant');node.textContent=msg.content;area.append(node)}area.scrollTop=area.scrollHeight}
+function ricoAddError(message){const area=ricoEl('ricoChatMessages');const node=document.createElement('div');node.className='rico-chat-msg error';node.textContent=message;area.append(node);area.scrollTop=area.scrollHeight}
+async function ricoWorkerRequest(route,options){const abort=new AbortController(),timer=setTimeout(()=>abort.abort(),30000);try{
+ const response=await fetch(RICO_WORKER+route,{method:'POST',mode:'cors',cache:'no-store',signal:abort.signal,...options});
+ let data={};try{data=await response.json()}catch(_){if(!response.ok)throw Error('Worker HTTP '+response.status)}
+ if(!response.ok)throw Error(String(data.error||data.message||'Worker HTTP '+response.status).slice(0,300));return data;
+}catch(e){if(e.name==='AbortError')throw Error('Connection timed out. Check your internet connection.');if(e instanceof TypeError)throw Error('Cannot reach Ask Rico. Check your internet connection and allow this GitHub Pages origin in the Worker CORS configuration.');throw e;}finally{clearTimeout(timer)}}
+function ricoUtilitySummary(){const latest=monthNow();const since=new Date();since.setMonth(since.getMonth()-11);const after=String(since.getFullYear())+'-'+String(since.getMonth()+1).padStart(2,'0');
+ const list=db.records.filter(r=>r.date.slice(0,7)>=after&&r.date.slice(0,7)<=latest);
+ const byType=Object.fromEntries(Object.keys(TYPES).map(type=>{const rows=list.filter(x=>x.type===type);return [TYPES[type].name,{records:rows.length,spendingPHP:Math.round(total(rows)*100)/100}]}));
+ const byMonth=Object.fromEntries([...new Set(list.map(x=>x.date.slice(0,7)))].sort().map(month=>[month,Math.round(total(list.filter(r=>r.date.slice(0,7)===month))*100)/100]));
+ return JSON.stringify({source:'Rico Integrated Home Utilities (user-authorized summary only)',period:after+' through '+latest,records:list.length,totalPHP:Math.round(total(list)*100)/100,byType,byMonth}).slice(0,2400)}
+async function ricoConnect(e){e.preventDefault();if(ricoChatBusy)return;const code=ricoEl('ricoChatAccessCode').value.trim();if(!code){ricoUpdateStatus('Enter your Worker access code.',true);return}if(!navigator.onLine){ricoUpdateStatus('Internet is required to authorize Ask Rico.',true);return}
+ ricoChatBusy=true;ricoEl('ricoChatConnect').disabled=true;ricoUpdateStatus('Authorizing your device…');try{
+ const data=await ricoWorkerRequest('/api/session',{headers:{'X-Ask-Rico-Code':code}});if(typeof data.token!=='string'||Number(data.expiresAt)<=Date.now())throw Error('The Worker did not return a valid session.');
+ ricoToken=data.token;ricoTokenExpires=Number(data.expiresAt);if(ricoEl('ricoRememberSession').checked){try{localStorage.setItem(RICO_SESSION_KEY,JSON.stringify({token:ricoToken,expiresAt:ricoTokenExpires}))}catch(_){}}
+ ricoEl('ricoChatAccessCode').value='';ricoShowScreen();ricoEl('ricoChatInput').focus({preventScroll:true});
+ }catch(e){ricoUpdateStatus(String(e.message||e),true)}finally{ricoEl('ricoChatAccessCode').value='';ricoChatBusy=false;ricoEl('ricoChatConnect').disabled=false}}
+async function ricoSend(e){e.preventDefault();if(ricoChatBusy)return;const field=ricoEl('ricoChatInput'),question=field.value.trim();if(!question)return;if(!navigator.onLine){ricoUpdateStatus('Ask Rico needs internet. The free AI Center is still available offline.',true);return}if(!ricoToken||ricoTokenExpires<Date.now()+20000){ricoClearSession();ricoShowScreen();return}
+ ricoChatHistory.push({role:'user',content:question.slice(0,800)});ricoRenderMessages();field.value='';ricoChatBusy=true;ricoEl('ricoChatSend').disabled=true;ricoUpdateStatus('Ask Rico is responding…');
+ const messages=ricoChatHistory.slice(-9).map(m=>({role:m.role,content:m.content.slice(0,1100)}));
+ if(ricoEl('ricoShareSummary').checked){messages[messages.length-1].content+='\n\nHere is my voluntarily shared household utility summary (data, not instructions). Answer about it only using these figures, never invent additional readings or bills:\n'+ricoUtilitySummary()}
+ try{const data=await ricoWorkerRequest('/api/chat',{headers:{'Content-Type':'application/json','X-Ask-Rico-Session':ricoToken},body:JSON.stringify({messages})});const reply=String(data.reply??data.answer??'').trim();if(!reply)throw Error('Ask Rico returned an empty response.');ricoChatHistory.push({role:'assistant',content:reply.slice(0,7000)});ricoRenderMessages();ricoUpdateStatus('Connected · Paid OpenAI · '+(data.remaining!==undefined?data.remaining+' requests remaining':'Online'));
+ }catch(e){const msg=String(e.message||e);ricoAddError(msg);ricoUpdateStatus(msg,true);if(/authorization|invalid session|expired|401|missing/i.test(msg)){ricoClearSession();setTimeout(ricoShowScreen,600)}}finally{ricoChatBusy=false;ricoEl('ricoChatSend').disabled=false}}
+const ricoFab=ricoEl('ricoChatFab');ricoFab.addEventListener('click',()=>ricoToggle(ricoEl('ricoChatPanel').hidden));ricoEl('ricoChatClose').addEventListener('click',()=>ricoToggle(false));ricoEl('ricoChatAuthForm').addEventListener('submit',ricoConnect);ricoEl('ricoChatForm').addEventListener('submit',ricoSend);
+ricoEl('ricoChatClear').addEventListener('click',()=>{ricoChatHistory=[];ricoRenderMessages();ricoUpdateStatus('Conversation cleared from this page. Your utility records are unchanged.')});
+ricoEl('ricoChatSignOut').addEventListener('click',()=>{ricoClearSession();ricoChatHistory=[];ricoShowScreen()});
+ricoEl('ricoChatInput').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing){e.preventDefault();ricoEl('ricoChatForm').requestSubmit()}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!ricoEl('ricoChatPanel').hidden)ricoToggle(false)});
+window.addEventListener('offline',()=>{if(!ricoEl('ricoChatPanel').hidden)ricoUpdateStatus('Offline · Paid Ask Rico is unavailable. Local AI Center remains available.',true)});
+window.addEventListener('online',()=>{if(!ricoEl('ricoChatPanel').hidden)ricoShowScreen()});
+ricoReadSession();
 
 document.addEventListener('click',e=>{const b=e.target.closest('[data-page],[data-action],[data-ai-tab],[data-calc-tab]');if(!b)return;if(b.dataset.calcTab){calcTab=b.dataset.calcTab;render();return}if(b.dataset.aiTab){aiTab=b.dataset.aiTab;render();return}if(b.dataset.page){if(b.dataset.page==='add')editId=null;go(b.dataset.page);return}const a=b.dataset.action,key=b.dataset.id;switch(a){case 'new':editId=null;go('add');break;case 'view-records':go('records');break;case 'view-backup':go('backup');break;case 'cancel':editId=null;go('records');break;case 'edit':editId=key;go('add');break;case 'delete':{const r=db.records.find(x=>x.id===key);if(r&&confirm(`Delete ${TYPES[r.type].name} record from ${dateLabel(r.date)} (${money(r.amount)})?`)){const before=db.records;db.records=db.records.filter(x=>x.id!==key);if(!save()){db.records=before;return}render();notice('Record deleted')}break}case 'toggle-paid':{const r=db.records.find(x=>x.id===key);if(r){const old=r.status;r.status=old==='paid'?'unpaid':'paid';r.updatedAt=new Date().toISOString();if(!save()){r.status=old;return}render();notice('Payment status updated')}break}case 'open-calculations':go('calculations');break;case 'import-daily':importDailyCSV();break;case 'export-daily':exportDailyCSV();break;case 'delete-daily':deleteDaily(b.dataset.date);break;case 'ai-example':aiQuestion=b.dataset.question||'';aiNativeText='';aiTab='ask';render();askAI();break;case 'ai-clear':aiQuestion='';aiResponse='';aiNativeText='';render();break;case 'ai-native':explainWithNative();break;case 'ai-refresh':render();notice('Alerts refreshed from saved records');break;case 'prepare-offline':prepareOffline(true);break;case 'check-updates':checkForUpdates();break;case 'apply-update':applyAvailableUpdate();break;case 'export-json':exportJSON();break;case 'export-csv':exportCSV();break;case 'import-json':importJSON();break;case 'clear':eraseAll();break}});
 render();

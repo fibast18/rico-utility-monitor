@@ -1,0 +1,18 @@
+Rico's Integrated Home Utilities — cumulative changes
+
+v1.3.2 (2026-11-13)
+- New lower-right floating Ask Rico button and chat panel on every app tab.
+- Private session authorization against user's existing Cloudflare/OpenAI Worker.
+- Optional temporary device token; no OpenAI API key or access code stored in the app.
+- Optional opt-in aggregate utility summary on requests (off by default).
+- Offline fallback and clear messaging; original built-in AI center untouched.
+- Preserved seven tabs, sticky header, billing calculations, daily readings, JSON backups, Check Updates, offline service worker, and footer developer credit.
+- Bumped app footer/meta/script and sw.js cache to v1.3.2.
+
+v1.3.1 — Centered developer footer on all tabs.
+v1.3.0 — Offline-first PWA shell, automatic caching and manual Save for Offline Use.
+v1.2.2 — GitHub Pages Check Updates / Update Now.
+v1.2.1 — App rename, fixed header/navigation, footer version.
+v1.2.0 — Billing Lab, meter readings/CSV import and advanced water, electricity, LPG calculations.
+v1.1.0 — Built-in AI Analyst, Ask AI and AI Advisor.
+v1.0.x — Core utilities tracking for electricity, water, car, motorcycle, LPG.

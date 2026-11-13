@@ -1,4 +1,4 @@
-Rico's Integrated Home Utilities – Smart Solutions v1.3.1
+Rico's Integrated Home Utilities – Smart Solutions v1.3.2
 
 UPLOAD ALL SIX FILES into the same GitHub Pages repository directory:
 - index.html
@@ -25,10 +25,25 @@ The app continues to store records only in browser localStorage using the origin
 key rico-utility-monitor-v1. Update does not clear those records. Avoid clearing
 Safari website data. Keep periodic JSON backups in a separate location.
 
-VERSION v1.3.1 (CUMULATIVE)
+VERSION v1.3.2 (CUMULATIVE)
 - Adds the centered footer credit: Developed by: Engr. Rico J. Pono
 - Moves footer elements into two centered lines on all seven tabs.
 - Bumps app version metadata, on-screen version, and service-worker cache name.
 - Retains offline installation, Check Updates, AI Analyst, Ask AI, AI Advisor,
   Billing Lab, CSV imports, all record forms, localStorage key, and JSON backups.
 - Cache update requires replacing BOTH index.html and sw.js in your repository.
+
+
+v1.3.2 — ASK RICO (PAID OPENAI WORKER)
+--------------------------------------
+- Floating "Ask Rico" button on every tab, lower right, opens the responsive chat.
+- Worker URL: https://ask-rico-ledger.rjpono.workers.dev (routes /api/session and /api/chat).
+- Your existing private Ask Rico access code is requested at first connect. NEVER paste an OpenAI API key into index.html.
+- Optionally save a signed 30-day Worker session token on this device; the access code is never saved.
+- Conversation remains only in current loaded page (Clear chat or reload to erase).
+- By default NO household records are sent. Only when 'Share a limited utility spending summary' is checked, an aggregated last-12-month snapshot is added to THAT request.
+- The Worker is currently also used by the Loan Ledger app and may use a loading-business-specific assistant prompt. To specialize Ask Rico for utility bills, update the Worker instructions on Cloudflare separately.
+- The Worker MUST permit this GitHub Pages site's exact origin via its CORS/APP_ORIGIN allowlist. If you see a CORS/network error, update the Worker allowlist. The public URL alone cannot bypass server authorization.
+- Paid Ask Rico needs an internet connection and uses existing Worker limits/paid OpenAI API. The original built-in AI center still works without paid APIs/offline.
+- Existing utility records and JSON backups use the unchanged localStorage key rico-utility-monitor-v1.
+- App version displayed in footer and update checker. Service worker offline-shell cache incremented.
