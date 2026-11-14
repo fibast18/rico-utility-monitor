@@ -1,6 +1,6 @@
-v1.3.4 (cumulative): Ask Rico reads the app's saved utility bills and daily meter readings through owner-approved, read-only context attached to each chat request. All previous v1.3.2 functionality remains. After GitHub deployment, use Backup > Check Updates and Update Now. To let Ask Rico use the records, leave "Give Ask Rico read-only access to my utility data" checked; uncheck to send a general question without records. This sends relevant data to your existing paid Cloudflare Worker/OpenAI per question, not permanently synchronizing the data. The app has no access to the Worker's source code, so server-side prompt instructions might still require updating if the Worker refuses this context.
+v1.3.5 (cumulative): Adds a computation-only Current Payable Calculator above Electricity Billing History in Billing Lab. Enter the previous reading, current reading, and current cost per kWh to estimate usage and total payable. Calculator entries are temporary and do not alter saved records. Ask Rico and all previous v1.3.4 functionality remain available. After GitHub deployment, use Backup > Check Updates and Update Now.
 
-Rico's Integrated Home Utilities – Smart Solutions v1.3.4
+Rico's Integrated Home Utilities – Smart Solutions v1.3.5
 
 UPLOAD ALL SIX FILES into the same GitHub Pages repository directory:
 - index.html
@@ -27,7 +27,10 @@ The app continues to store records only in browser localStorage using the origin
 key rico-utility-monitor-v1. Update does not clear those records. Avoid clearing
 Safari website data. Keep periodic JSON backups in a separate location.
 
-VERSION v1.3.4 (CUMULATIVE)
+VERSION v1.3.5 (CUMULATIVE)
+- Adds a temporary Current Payable Calculator above Electricity Billing History.
+- Computes kWh used and estimated payable from entered readings and current ₱/kWh.
+- Does not save calculator entries or modify utility records.
 - Adds the centered footer credit: Developed by: Engr. Rico J. Pono
 - Moves footer elements into two centered lines on all seven tabs.
 - Bumps app version metadata, on-screen version, and service-worker cache name.

@@ -1,3 +1,12 @@
+Rico's Integrated Home Utilities v1.3.5 — Current Payable Calculator
+
+- Adds a computation-only Current Payable Calculator above Electricity Billing History in Billing Lab.
+- Calculates electricity used as current reading minus previous reading, then estimates total payable using the user-entered current cost per kWh.
+- Updates the results live, rejects a current reading below the previous reading, and clearly notes that fixed charges, taxes, and adjustments may not be included.
+- Calculator values are temporary and never change or save bills, daily readings, backups, or other application records.
+- Preserves all five utility types, seven tabs, AI modules, import/export, backup/restore, offline PWA, localStorage key, security settings, and developer footer.
+- Updates HTML version metadata, visible footer, update checker version, and service-worker cache to v1.3.5.
+
 Rico's Integrated Home Utilities v1.3.4 — Cumulative Ask Rico Data Context Fix
 
 - Fixes v1.3.3 large JSON context being truncated before key electricity facts reached the paid Worker.
