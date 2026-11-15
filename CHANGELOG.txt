@@ -1,3 +1,13 @@
+Rico's Integrated Home Utilities v1.3.9 — Fully Automated Current Payable Calculator
+
+- Automatically fills the calculator's previous reading from the Present kWh reading in the latest Electricity Billing History record.
+- Continues to source current reading from the newest Daily Meter reading and current ₱/kWh from the latest electricity bill's effective unit cost.
+- Makes all three calculator source fields read-only and recalculates whenever Overview renders after source records change.
+- Removes the manual previous-reading dependency; older calculator preference data is left untouched in browser storage but is no longer used.
+- Clearly identifies both source record dates and warns when readings are missing, reversed, reset, or entered incorrectly.
+- Preserves all utility data, storage schema, import/export, backup/restore, AI modules, offline PWA, security settings, and developer footer.
+- Updates HTML version metadata, visible footer, update checker version, and service-worker cache to v1.3.9.
+
 Rico's Integrated Home Utilities v1.3.8 — Daily CSV Tools Moved to Backup
 
 - Moves the complete Import Daily Monitoring CSV panel from Billing Lab → Daily Meter to Backup, directly below Restore JSON Backup.
