@@ -1,6 +1,6 @@
-v1.3.5 (cumulative): Adds a computation-only Current Payable Calculator above Electricity Billing History in Billing Lab. Enter the previous reading, current reading, and current cost per kWh to estimate usage and total payable. Calculator entries are temporary and do not alter saved records. Ask Rico and all previous v1.3.4 functionality remain available. After GitHub deployment, use Backup > Check Updates and Update Now.
+v1.3.8 (cumulative): Moves the Daily Monitoring CSV import/export panel from Billing Lab into Backup, directly below Restore JSON Backup. All CSV validation and duplicate-date protections remain unchanged. Ask Rico and all previous functionality remain available. After GitHub deployment, use Backup > Check Updates and Update Now.
 
-Rico's Integrated Home Utilities – Smart Solutions v1.3.5
+Rico's Integrated Home Utilities – Smart Solutions v1.3.8
 
 UPLOAD ALL SIX FILES into the same GitHub Pages repository directory:
 - index.html
@@ -27,10 +27,13 @@ The app continues to store records only in browser localStorage using the origin
 key rico-utility-monitor-v1. Update does not clear those records. Avoid clearing
 Safari website data. Keep periodic JSON backups in a separate location.
 
-VERSION v1.3.5 (CUMULATIVE)
-- Adds a temporary Current Payable Calculator above Electricity Billing History.
-- Computes kWh used and estimated payable from entered readings and current ₱/kWh.
-- Does not save calculator entries or modify utility records.
+VERSION v1.3.8 (CUMULATIVE)
+- Moves Daily Monitoring CSV import/export from Billing Lab to Backup below Restore JSON Backup.
+- Moves the Current Payable Calculator to Overview above the month-by-category panel.
+- Automatically sources current ₱/kWh from the latest electricity bill and current reading from the latest Daily Meter entry.
+- Keeps only the manually entered previous reading persistent until changed or cleared.
+- Keeps the two automatic fields read-only and shows their source record dates.
+- Does not create or modify utility records.
 - Adds the centered footer credit: Developed by: Engr. Rico J. Pono
 - Moves footer elements into two centered lines on all seven tabs.
 - Bumps app version metadata, on-screen version, and service-worker cache name.

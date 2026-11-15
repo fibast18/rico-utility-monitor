@@ -1,3 +1,34 @@
+Rico's Integrated Home Utilities v1.3.8 — Daily CSV Tools Moved to Backup
+
+- Moves the complete Import Daily Monitoring CSV panel from Billing Lab → Daily Meter to Backup, directly below Restore JSON Backup.
+- Preserves CSV file selection, validation, duplicate-date confirmation, import behavior, and Daily CSV export.
+- Keeps Daily Meter focused on manual readings, consumption summaries, charts, history, and deletion.
+- Adds a Daily Meter note directing users to Backup for CSV import/export.
+- Does not change stored records, the JSON backup schema, localStorage keys, or calculation behavior.
+- Preserves all existing features, offline PWA behavior, AI modules, security settings, and developer footer.
+- Updates HTML version metadata, visible footer, update checker version, and service-worker cache to v1.3.8.
+
+Rico's Integrated Home Utilities v1.3.7 — Automated Overview Payable Calculator
+
+- Moves the Current Payable Calculator from Billing Lab to Overview, immediately above the current month-by-category panel.
+- Automatically uses the latest electricity billing-history effective unit cost (actual amount divided by recorded kWh) as the current ₱/kWh.
+- Automatically uses the newest dated Daily Meter reading as the calculator's current reading.
+- Makes the two automatic source fields read-only and displays their source record dates or clear missing-data guidance.
+- Keeps only the manually entered previous reading persistent on the same browser/device until the owner changes or clears it.
+- Recalculates automatically whenever Overview renders after an electricity bill or Daily Meter reading changes.
+- Preserves utility records, storage schema, AI modules, import/export, backup/restore, offline PWA, security settings, and developer footer.
+- Updates HTML version metadata, visible footer, update checker version, and service-worker cache to v1.3.7.
+
+Rico's Integrated Home Utilities v1.3.6 — Persistent Payable Calculator Figures
+
+- Keeps the Current Payable Calculator's previous reading, current reading, and cost per kWh on the same browser/device after leaving Billing Lab, reloading, or reopening the app.
+- Automatically restores the saved figures and recalculates kWh usage and estimated total payable.
+- Changing or clearing a calculator field immediately updates its saved value.
+- Stores calculator figures under the separate localStorage key `rico-utilities-payable-calculator-v1`; utility records and the existing `rico-utility-monitor-v1` database remain unchanged.
+- Calculator figures remain computation-only and do not create or edit bills, daily readings, JSON backups, or other application records.
+- Preserves all existing features, offline PWA behavior, AI modules, import/export, backup/restore, security settings, and developer footer.
+- Updates HTML version metadata, visible footer, update checker version, and service-worker cache to v1.3.6.
+
 Rico's Integrated Home Utilities v1.3.5 — Current Payable Calculator
 
 - Adds a computation-only Current Payable Calculator above Electricity Billing History in Billing Lab.
