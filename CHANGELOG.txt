@@ -1,3 +1,12 @@
+Rico's Integrated Home Utilities v1.4.3 — Ask Rico Camella Awareness
+
+- Adds Camella Monthly Dues to the owner-authorized, read-only context shared with paid Ask Rico.
+- Provides verified Camella beginning balance, dues added, payments, current balance, pending receipts and recent dated rows.
+- Adds a deterministic on-device Camella answer before the paid AI response for transparent verification.
+- Teaches the free local Ask AI module to answer Camella payment and balance questions.
+- Preserves the data-sharing checkbox: no Camella or utility data is sent when sharing is disabled.
+- Updates the app and offline cache version to v1.4.3.
+
 Rico's Integrated Home Utilities v1.4.2 — Simplified Camella Entry and Newest-First History
 
 - Removes the fixed ₱300 field from the historical monthly due form; the amount is now applied internally.
