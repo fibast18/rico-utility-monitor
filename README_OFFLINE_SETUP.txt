@@ -1,6 +1,6 @@
-v1.4.2 (cumulative): The fixed ₱300 field is removed from historical Camella entry because the amount is applied internally. Camella HOA history now shows newest transactions first while balances remain correctly calculated in date order. All previous functionality remains available. After GitHub deployment, use Backup > Check Updates and Update Now.
+v1.4.3 (cumulative): Ask Rico and the free local Ask AI now detect Camella Monthly Dues. With read-only sharing enabled, paid Ask Rico receives verified Camella payments, balances, receipt status and relevant rows selected on this device. All previous functionality remains available. After GitHub deployment, use Backup > Check Updates and Update Now.
 
-Rico's Integrated Home Utilities – Smart Solutions v1.4.2
+Rico's Integrated Home Utilities – Smart Solutions v1.4.3
 
 UPLOAD ALL SIX FILES into the same GitHub Pages repository directory:
 - index.html
@@ -27,7 +27,9 @@ The app continues to store records only in browser localStorage using the origin
 key rico-utility-monitor-v1. Update does not clear those records. Avoid clearing
 Safari website data. Keep periodic JSON backups in a separate location.
 
-VERSION v1.4.2 (CUMULATIVE)
+VERSION v1.4.3 (CUMULATIVE)
+- Adds Camella Monthly Dues awareness to paid Ask Rico and the free local Ask AI.
+- Shares Camella facts only when the existing read-only data-sharing checkbox is enabled.
 - Removes the unnecessary fixed ₱300 input from historical Camella entry.
 - Displays Camella HOA transactions newest-first without changing chronological calculations.
 - Fixes Camella Monthly Dues at ₱300 and adds one due automatically on the first of each month.
