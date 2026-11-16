@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#12213a">
-<title>Rico's Integrated Home Utilities | v1.4.2</title>
-<meta name="app-version" content="1.4.2">
+<title>Rico's Integrated Home Utilities | v1.4.3</title>
+<meta name="app-version" content="1.4.3">
 <meta name="description" content="Private household utility and fuel expense tracker for water, electricity, car, motorcycle and LPG.">
 <meta name="apple-mobile-web-app-title" content="Rico Utilities">
 <meta name="application-name" content="Rico's Integrated Home Utilities">
@@ -133,7 +133,7 @@ body{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;paddi
 </div>
 <main class="shell">
 <div id="app"></div>
-<footer class="app-footer" aria-label="Application information"><span class="developer-credit">Developed by: Engr. Rico J. Pono</span><span class="footer-release"><span>Rico's Integrated Home Utilities</span><span id="appVersion">Version 1.4.2</span></span></footer>
+<footer class="app-footer" aria-label="Application information"><span class="developer-credit">Developed by: Engr. Rico J. Pono</span><span class="footer-release"><span>Rico's Integrated Home Utilities</span><span id="appVersion">Version 1.4.3</span></span></footer>
 </main>
 <!-- v1.3.4: Private Ask Rico Cloudflare Worker chat. No OpenAI API key is present in this public page. -->
 <section id="ricoChatPanel" class="rico-chat-panel" role="dialog" aria-label="Ask Rico paid AI chat" aria-modal="false" hidden>
@@ -170,7 +170,7 @@ body{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;paddi
 <div id="toast" class="message" role="status" aria-live="polite"></div>
 <script>
 (()=>{'use strict';
-const APP_VERSION='1.4.2';
+const APP_VERSION='1.4.3';
 const appBar=document.getElementById('fixedAppBar');
 function syncAppBarHeight(){if(appBar)document.documentElement.style.setProperty('--app-bar-height',Math.ceil(appBar.getBoundingClientRect().height)+'px')}
 syncAppBarHeight();
@@ -422,6 +422,7 @@ function eraseAll(){if(!confirm('Erase ALL local utility bills, daily meter read
 // Private, read-only AI helpers. Nothing below edits the saved record database.
 let aiTab='analyst',aiPeriod='6m',aiQuestion='',aiResponse='',aiResponseKind='local',aiNativeText='',aiNativeBusy=false,aiNativeChecked=false,aiNativeStatus='Checking this browser…';
 const AI_SUGGESTIONS=[
+ 'How much have I paid in Camella dues?',
  'How much did I spend this month?',
  'What are my unpaid and overdue bills?',
  'Compare this month with last month',
@@ -464,7 +465,8 @@ if(!out.length)out.push({priority:'info',title:'No major alerts found',body:'Kee
 function aiAdvisorPage(){const advice=aiSuggestions(),alerts=advice.filter(x=>['urgent','high'].includes(x.priority)).length;return `<div class="topline"><h3>AI Advisor</h3><span class="smallmuted">Automatic recommendations · Read-only</span></div><div class="panel"><div class="between"><b>${alerts?`${alerts} priority item(s) to review`:'Recommendations based on recorded data'}</b><button class="btn small ghost" data-action="ai-refresh">↻ Recheck records</button></div><p class="fine muted">Checks overdue bills, abnormal readings, duplicates, trends and cost patterns. These are rules and comparisons—not verified faults or automatic actions.</p></div><div class="ai-advice">${advice.map((a,i)=>`<article class="panel ai-advice-card ai-${a.priority}"><div class="between"><b>${i+1}. ${escape(a.title)}</b><span class="ai-priority">${({urgent:'Overdue',high:'High',medium:'Review',tip:'Savings',info:'Info'})[a.priority]}</span></div><p>${escape(a.body)}</p></article>`).join('')}</div><div class="panel ai-disclaimer">🔒 Suggestions never change bills, meter readings, payment status, or other records. Review any possible anomaly before editing a record yourself.</div>`}
 function detectCategory(q){const x=q.toLowerCase(),categories=[];if(/\b(electricity|electric|power|kwh|kilowatt)\b/.test(x))categories.push('electricity');if(/\bwater\b|\bm3\b|\bcubic meter/.test(x))categories.push('water');if(/\b(car|auto|automobile)\b/.test(x))categories.push('car');if(/\b(motorcycle|motorbike|motor|bike)\b/.test(x))categories.push('motorcycle');if(/\b(lpg|cooking gas|gas tank|gas cylinder|petroleum gas)\b/.test(x))categories.push('lpg');if(/\b(fuel|gasoline|petrol|diesel)\b/.test(x)&&!categories.includes('car')&&!categories.includes('motorcycle'))categories.push('car','motorcycle');return [...new Set(categories)]}
 function questionPeriod(q){const x=q.toLowerCase(),match=x.match(/\b(20\d\d)[-/](0?[1-9]|1[0-2])\b/);if(match)return {month:`${match[1]}-${match[2].padStart(2,'0')}`,name:monthLabel(`${match[1]}-${match[2].padStart(2,'0')}`)};const names=['january','february','march','april','may','june','july','august','september','october','november','december'];for(let i=0;i<12;i++){const regex=new RegExp(`\\b${names[i].slice(0,3)}(?:${names[i].slice(3)})?\\s*(20\\d\\d)?\\b`,'i'),m=x.match(regex);if(m){const year=m[1]||String(new Date().getFullYear());const mm=`${year}-${String(i+1).padStart(2,'0')}`;return {month:mm,name:monthLabel(mm)}}}if(/\blast month|previous month\b/.test(x))return {period:'last',name:'last month'};if(/\bthis month|current month\b/.test(x))return {period:'this',name:'this month'};if(/\b(last|past|previous)\s*(3|three)\s*months?/.test(x))return {period:'3m',name:'last 3 calendar months'};if(/\b(last|past|previous)\s*(6|six)\s*months?/.test(x))return {period:'6m',name:'last 6 calendar months'};if(/\bthis year\b/.test(x))return {period:'year',name:'this year'};if(/\blast year\b/.test(x))return {year:new Date().getFullYear()-1,name:'last year'};return {period:'all',name:'all recorded dates'}}
-function answerQuestion(question){const q=question.toLowerCase().trim(),cat=detectCategory(q),p=questionPeriod(q),periodRows=p.month?db.records.filter(r=>r.date.startsWith(p.month)):p.year?db.records.filter(r=>r.date.startsWith(String(p.year))):selectedRows(p.period),rows=periodRows.filter(r=>!cat.length||cat.includes(r.type)),group=cat.length?cat.map(k=>TYPES[k].name).join(' + '):'All categories',label=`${group} · ${p.name}`;
+function answerQuestion(question){const q=question.toLowerCase().trim(),cat=detectCategory(q),p=questionPeriod(q),periodRows=p.month?db.records.filter(r=>r.date.startsWith(p.month)):p.year?db.records.filter(r=>r.date.startsWith(String(p.year))):selectedRows(p.period),rows=periodRows.filter(r=>!cat.length||cat.includes(r.type)),group=cat.length?cat.map(k=>TYPES[k].name).join(' + '):'All categories',label=`${group} · ${p.name}`,hoa=ricoCamellaFact(q);
+if(hoa)return `Camella Monthly Dues · ${hoa.period}: ${money(hoa.payments)} paid across ${hoa.rowCount} monthly row(s). Dues added: ${money(hoa.duesAdded)}. Current balance: ${money(hoa.currentBalance)}.${hoa.pendingReceipts?` ${hoa.pendingReceipts} selected row(s) have no OR number yet.`:''}`;
 if(!db.records.length)return 'There are no recorded utilities yet. Add your first bill, fuel purchase or LPG refill, then ask again.';
 if(/\b(lpg|cooking gas|gas tank|cylinder)\b/.test(q)&&/\b(how long|last|days|duration|next|expected|forecast|replace|replacement|when)\b/.test(q)){const f=lpgForecast();return f?.prior?`Last completed LPG interval: ${f.prior} days. Latest purchase: ${dateLabel(f.last)}. If the same interval repeats, next purchase might be ${dateLabel(f.nextSame)}. Average of up to three recent intervals: ${f.rolling} days, with a rough projected date of ${dateLabel(f.nextAverage)}. These estimates assume each purchase replaced one tank.`:'At least two LPG purchases are needed to estimate how long the previous tank lasted.'}
 if(/\b(electric|electricity|power|kwh)\b/.test(q)&&/\b(daily|per day|day|morning reading)\b/.test(q)){const b=billSeries('electricity').at(-1),d=dailySeries().filter(x=>x.avg!==null&&x.days<=2).slice(-30);const avg=d.length?d.reduce((a,x)=>a+x.delta,0)/d.reduce((a,x)=>a+x.days,0):null;return `Latest billed electricity: ${b?.perDay!==null&&b?.perDay!==undefined?num(b.perDay)+' kWh/day':'billing period dates not yet available'}. Daily-meter average (up to 30 recent intervals): ${avg!==null?num(avg)+' kWh/day':'no imported daily readings yet'}. Daily readings and billed periods may differ.`}
@@ -481,7 +483,7 @@ if(/\b(per liter|per litre|\/l|per kwh|per m3|per cubic|unit price|cost per|aver
 if(/\b(how many|liters?|litres?|kwh|kilowatt|cubic|m3|consum\w*|usage|quantity|kilograms?|kg)\b/.test(q)&&!/\b(how much did i (spend|pay)|cost|bill amount|expenses?)\b/.test(q)){const sums=summarizeTypes(rows).filter(x=>x.count&&(!cat.length||cat.includes(x.type)));return sums.length?`Quantities for ${p.name}:\n`+sums.map(x=>`${x.name}: ${x.quantity>0?num(x.quantity)+' '+x.unit:'no valid quantity'}`).join('\n')+'\nWater/electricity reflect meter differences; fuel/LPG reflect purchased amounts.':'No matching recorded quantities for '+label+'.'}
 if(/\b(how much|total|spend|spent|cost|expense|pay|paid|budget|history|breakdown)\b/.test(q)){const sums=summarizeTypes(rows).filter(x=>x.count);return `${label}: ${money(total(rows))} across ${rows.length} record(s).\n`+(sums.length?sums.map(x=>`${x.name}: ${money(x.amount)} (${x.count} record(s))`).join('\n'):'No matching records.')+'\nTotals include unpaid bills and use the date of each record.'}
 return `I can answer exact questions about your saved records, including spending, quantity, prices, comparisons, due dates and savings alerts.\n\nTry: “${AI_SUGGESTIONS[0]}” or “${AI_SUGGESTIONS[1]}”. For more conversational explanations, you can use Chrome’s optional on-device AI if it is supported on your device.`}
-function aiAskPage(){return `<div class="topline"><h3>Ask AI</h3><span class="smallmuted">Ask about your water, electricity, fuel & LPG</span></div><div class="panel"><form id="aiQuestionForm"><div class="field"><label for="aiQuestion">Your question</label><textarea id="aiQuestion" maxlength="350" rows="3" placeholder="Example: How much did I spend on electricity last month?">${escape(aiQuestion)}</textarea></div><div class="actions"><button class="btn primary" type="submit">Ask about my records</button><button class="btn ghost" type="button" data-action="ai-clear">Clear</button></div></form><div class="ai-examples"><div class="smallmuted"><b>Try asking:</b></div><div class="ai-chip-row">${AI_SUGGESTIONS.map(x=>`<button class="ai-chip" type="button" data-action="ai-example" data-question="${escape(x)}">${escape(x)}</button>`).join('')}</div></div></div>
+function aiAskPage(){return `<div class="topline"><h3>Ask AI</h3><span class="smallmuted">Ask about Camella dues, water, electricity, fuel & LPG</span></div><div class="panel"><form id="aiQuestionForm"><div class="field"><label for="aiQuestion">Your question</label><textarea id="aiQuestion" maxlength="350" rows="3" placeholder="Example: How much have I paid in Camella dues?">${escape(aiQuestion)}</textarea></div><div class="actions"><button class="btn primary" type="submit">Ask about my records</button><button class="btn ghost" type="button" data-action="ai-clear">Clear</button></div></form><div class="ai-examples"><div class="smallmuted"><b>Try asking:</b></div><div class="ai-chip-row">${AI_SUGGESTIONS.map(x=>`<button class="ai-chip" type="button" data-action="ai-example" data-question="${escape(x)}">${escape(x)}</button>`).join('')}</div></div></div>
 ${aiResponse?`<div class="panel"><div class="between"><h3>Answer</h3><span class="tag paid">Local analysis</span></div><div class="ai-response" id="aiResponse" role="status">${escape(aiResponse)}</div><div class="footnote">Calculated from records on this device only. Please verify important decisions against original bills.</div></div>`:''}
 <div class="panel"><div class="between"><div><h3 style="margin-bottom:3px">✨ Optional Chrome built-in AI</h3><div class="fine muted" id="nativeStatus">${escape(aiNativeStatus)}</div></div><button type="button" class="btn outline" data-action="ai-native" ${aiNativeBusy?'disabled':''}>${aiNativeBusy?'Generating…':'Explain with on-device AI'}</button></div><p class="fine muted">When available, compatible desktop Chrome can explain an answer using an on-device language model. It may need a one-time model download and suitable hardware. This never uses a paid API or sends records to an external AI service. On Safari/iPhone or unsupported browsers, the free local question engine above still works.</p>${aiNativeText?`<div class="ai-response ai-native" role="status">${escape(aiNativeText)}</div><p class="footnote">AI-written explanation; check amounts against the exact local calculation above.</p>`:''}</div>`}
 function aiPage(){return `<div class="topline"><div><h2>🧠 Utility AI Center</h2><div class="muted fine">Free, private, read-only · No API key or subscription</div></div></div><div class="ai-tabs" role="tablist" aria-label="Utility AI features"><button class="ai-tab ${aiTab==='analyst'?'active':''}" role="tab" aria-selected="${aiTab==='analyst'}" data-ai-tab="analyst">📊 AI Analyst</button><button class="ai-tab ${aiTab==='ask'?'active':''}" role="tab" aria-selected="${aiTab==='ask'}" data-ai-tab="ask">💬 Ask AI</button><button class="ai-tab ${aiTab==='advisor'?'active':''}" role="tab" aria-selected="${aiTab==='advisor'}" data-ai-tab="advisor">💡 AI Advisor</button></div><div id="aiContent">${aiTab==='analyst'?analyzePage():aiTab==='ask'?aiAskPage():aiAdvisorPage()}</div><div class="fine muted">The AI features read saved utility records but never change them. Your data remains in this browser unless you export it. Built-in AI availability varies by browser and device.</div>`}
@@ -508,7 +510,7 @@ function ricoReadSession(){try{const saved=JSON.parse(localStorage.getItem(RICO_
 function ricoClearSession(){ricoToken='';ricoTokenExpires=0;try{localStorage.removeItem(RICO_SESSION_KEY)}catch(_){}}
 function ricoShowScreen(){const valid=!!ricoToken&&ricoTokenExpires>Date.now()+20000;ricoEl('ricoChatAuth').hidden=valid;ricoEl('ricoChatScreen').hidden=!valid;if(valid){ricoUpdateStatus(navigator.onLine?'Connected · Ask Rico uses paid OpenAI':'Offline · paid Ask Rico needs internet; the built-in AI Center still works offline');ricoRenderMessages()}else ricoUpdateStatus('Enter the private Worker access code to connect.');}
 function ricoToggle(open){const box=ricoEl('ricoChatPanel');box.hidden=!open;ricoEl('ricoChatFab').setAttribute('aria-expanded',String(open));if(open){ricoReadSession();ricoShowScreen();setTimeout(()=>{(ricoEl(ricoToken?'ricoChatInput':'ricoChatAccessCode'))?.focus({preventScroll:true})},0)}else ricoEl('ricoChatFab').focus({preventScroll:true})}
-function ricoRenderMessages(){const area=ricoEl('ricoChatMessages');area.replaceChildren();if(!ricoChatHistory.length){const note=document.createElement('div');note.className='rico-chat-msg note';note.textContent='Ask about your electricity readings, water bills, LPG forecast or vehicle fuel. With data sharing checked, the app calculates answers locally and shares focused facts with your paid AI when you press Send. Nothing is changed in your app.';area.append(note)}for(const msg of ricoChatHistory){const node=document.createElement('div');node.className='rico-chat-msg '+(msg.role==='user'?'user':msg.role==='appfact'?'note':'assistant');node.textContent=msg.content;area.append(node)}area.scrollTop=area.scrollHeight}
+function ricoRenderMessages(){const area=ricoEl('ricoChatMessages');area.replaceChildren();if(!ricoChatHistory.length){const note=document.createElement('div');note.className='rico-chat-msg note';note.textContent='Ask about Camella dues, electricity readings, water bills, LPG forecast or vehicle fuel. With data sharing checked, the app calculates answers locally and shares focused facts with your paid AI when you press Send. Nothing is changed in your app.';area.append(note)}for(const msg of ricoChatHistory){const node=document.createElement('div');node.className='rico-chat-msg '+(msg.role==='user'?'user':msg.role==='appfact'?'note':'assistant');node.textContent=msg.content;area.append(node)}area.scrollTop=area.scrollHeight}
 function ricoAddError(message){const area=ricoEl('ricoChatMessages');const node=document.createElement('div');node.className='rico-chat-msg error';node.textContent=message;area.append(node);area.scrollTop=area.scrollHeight}
 async function ricoWorkerRequest(route,options){const abort=new AbortController(),timer=setTimeout(()=>abort.abort(),30000);try{
  const response=await fetch(RICO_WORKER+route,{method:'POST',mode:'cors',cache:'no-store',signal:abort.signal,...options});
@@ -535,9 +537,15 @@ function ricoQuestionCategories(question){
  if(/\bcar\b|\bautomobile\b|\bvehicle\b/.test(q))found.push('car');
  if(/\bmotorcycle\b|\bmotorbike\b|\bscooter\b/.test(q))found.push('motorcycle');
  if(/\blpg\b|cooking gas|gas tank|gas cylinder/.test(q))found.push('lpg');
+ if(/\bcamella\b|\bhoa\b|homeowners? association|monthly dues?/.test(q)&&!found.length)return [];
  // A question about a single utility gets its full detailed history, not just totals.
  // Cross-utility questions get every category, including LPG and vehicle fuel.
  return found.length?[...new Set(found)]:Object.keys(TYPES);
+}
+function ricoCamellaFact(question){
+ const q=String(question||''),isCamella=/\bcamella\b|\bhoa\b|homeowners? association|monthly dues?/i.test(q);if(!isCamella)return null;
+ const p=questionPeriod(q),all=camellaSeries(),rows=p.month?all.filter(x=>x.r.date.startsWith(p.month)):p.year?all.filter(x=>x.r.date.startsWith(String(p.year))):p.period==='all'?all:all.filter(x=>inPeriod(x.r,p.period));
+ return {period:p.name,rowCount:rows.length,duesAdded:rows.reduce((a,x)=>a+x.r.arrears,0),payments:rows.reduce((a,x)=>a+x.r.payment,0),currentBalance:all.at(-1)?.balance??db.camellaDues.beginningBalance,beginningBalance:db.camellaDues.beginningBalance,pendingReceipts:rows.filter(x=>!x.r.orNumber).length,rows:rows.slice(-12).reverse().map(x=>({date:x.r.date,due:x.r.arrears,payment:x.r.payment,balance:x.balance,orNumber:x.r.orNumber||'',orDate:x.r.orDate||''}))};
 }
 function ricoDailyFact(question){
  const start=ricoQuestionStartDate(question);
@@ -556,6 +564,8 @@ function ricoDailyFact(question){
 // chat endpoint may trim long messages; sending 26 KB of JSON was ineffective.
 function ricoLocalAnswer(question){
  const q=String(question||'');
+ const hoa=ricoCamellaFact(q);
+ if(hoa){let text='On-device Camella calculation for '+hoa.period+': payments total '+money(hoa.payments)+' across '+hoa.rowCount+' monthly row(s); dues added '+money(hoa.duesAdded)+'. Current Camella balance is '+money(hoa.currentBalance)+'.';if(hoa.pendingReceipts)text+=' '+hoa.pendingReceipts+' selected row(s) have no OR number yet.';return text}
  const isEnergy=/\belectr|\bkwh\b|kilowatt|power|energy|meter reading/i.test(q);
  const isConsumption=/consum|\buse\b|\bused\b|usage|kilowatt|\bkwh\b|meter reading/i.test(q);
  if(!(isEnergy&&isConsumption))return '';
@@ -572,9 +582,10 @@ function ricoLocalAnswer(question){
  return text;
 }
 function ricoCompactContext(question){
- const categories=ricoQuestionCategories(question),fact=ricoDailyFact(question);
+ const categories=ricoQuestionCategories(question),fact=ricoDailyFact(question),hoa=ricoCamellaFact(question);
  const pieces=[];
  pieces.push('App saved records on this device as of '+today()+'. READ ONLY. Not a remote live database. Amounts PHP. Meter usage is not spending.');
+ if(hoa){pieces.push('VERIFIED CAMELLA HOA ('+hoa.period+'): beginning balance '+money(hoa.beginningBalance)+'; dues added '+money(hoa.duesAdded)+'; PAYMENTS='+money(hoa.payments)+' across '+hoa.rowCount+' row(s); CURRENT BALANCE='+money(hoa.currentBalance)+'; pending OR='+hoa.pendingReceipts+'.');if(hoa.rows.length)pieces.push('Camella rows newest first: '+hoa.rows.map(r=>r.date+' due '+money(r.due)+' paid '+money(r.payment)+' balance '+money(r.balance)+' OR '+(r.orNumber||'pending')+(r.orDate?' dated '+r.orDate:'')).join('; ')+'.')}
  if(fact){
   if(fact.kWhFromStartToLastRecordedDate!==undefined&&fact.kWhFromStartToLastRecordedDate>=0){
    pieces.push('VERIFIED ELECTRICITY: '+fact.requestedStartDate+' meter='+fact.startReadingKwh+' kWh; '+fact.endDate+' meter='+fact.endReadingKwh+' kWh; DIFFERENCE='+fact.kWhFromStartToLastRecordedDate+' kWh.');
@@ -609,13 +620,13 @@ function ricoCompactContext(question){
   const readings=[...db.dailyReadings].filter(x=>x.date<=today()).sort((a,b)=>b.date.localeCompare(a.date));
   if(readings.length)pieces.push('Latest daily electric meter readings: '+readings.slice(0,3).map(r=>r.date+'='+r.reading+'kWh').join('; ')+'. Total samples='+readings.length+'.');
  }
- const maxChars=1050;let result='';
+ const maxChars=hoa?1800:1050;let result='';
  for(const part of pieces){if(result.length+part.length+1>maxChars)break;result+=part+'\n'}
  return result.trim();
 }
 function ricoDataPrompt(question){
  const q=String(question||'').slice(0,400);
- return 'QUESTION: '+q+'\n[READ-ONLY APP FACTS — COMPUTED ON THIS DEVICE]\n'+ricoCompactContext(q)+'\n[/APP FACTS]\nUse the verified figures above. Do not claim missing meter data if the verified start/end readings are shown. Clearly distinguish latest recorded date from today. The App data is owner-authorized for this request only.';
+ return 'QUESTION: '+q+'\n[READ-ONLY APP FACTS — COMPUTED ON THIS DEVICE]\n'+ricoCompactContext(q)+'\n[/APP FACTS]\nUse the verified figures above, including Camella HOA facts when provided. Do not claim Camella data is missing when verified Camella figures are shown. Do not claim missing meter data if verified start/end readings are shown. Clearly distinguish latest recorded date from today. The App data is owner-authorized for this request only.';
 }
 async function ricoConnect(e){e.preventDefault();if(ricoChatBusy)return;const code=ricoEl('ricoChatAccessCode').value.trim();if(!code){ricoUpdateStatus('Enter your Worker access code.',true);return}if(!navigator.onLine){ricoUpdateStatus('Internet is required to authorize Ask Rico.',true);return}
  ricoChatBusy=true;ricoEl('ricoChatConnect').disabled=true;ricoUpdateStatus('Authorizing your device…');try{
