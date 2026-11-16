@@ -1,3 +1,16 @@
+Rico's Integrated Home Utilities v1.4.0 — Camella Monthly Dues Monitor
+
+- Adds an eighth tab, Camella Monthly Dues, between Billing Lab and AI Center.
+- Adds a dedicated beginning balance and dated monthly rows for arrears, payments, OR number, OR date and notes.
+- Automatically calculates running balance as prior balance + arrears − payment and numeric OR difference from the preceding numeric OR number.
+- Supports adding, editing and confirmed deletion of Camella rows; later balances and OR differences recalculate automatically.
+- Adds Camella KPIs for current balance, total arrears, total payments and receipts pending, plus a spreadsheet-style history table and Camella CSV export.
+- Stores Camella data inside the existing `rico-utility-monitor-v1` root without changing existing record or daily-reading meanings.
+- Upgrades JSON backup payload to version 3 with `camellaDues`; older backups remain accepted and do not erase Camella data when that section is absent.
+- Keeps Camella amounts separate from existing utility expense totals to prevent double-counting.
+- Preserves all prior utility features, AI modules, import/export, offline PWA, security settings, update workflow and developer footer.
+- Updates HTML version metadata, visible footer, update checker version and service-worker cache to v1.4.0.
+
 Rico's Integrated Home Utilities v1.3.9 — Fully Automated Current Payable Calculator
 
 - Automatically fills the calculator's previous reading from the Present kWh reading in the latest Electricity Billing History record.
