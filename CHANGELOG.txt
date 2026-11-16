@@ -1,3 +1,13 @@
+Rico's Integrated Home Utilities v1.5.1 — Editable COGEA Cash In
+
+- Removes the Cash Out column because COGEA CBU withdrawals are not permitted.
+- Makes each monthly Cash In editable with ₱1,000 as the default.
+- Supports entering the total COGEA-reported Cash In when interest is added and recalculates all later balances.
+- Persists Cash In adjustments locally and includes them in JSON backup and restore.
+- Keeps the ₱25,000 maximum and automatically adjusts the final scheduled amount.
+- Preserves posted/scheduled status, Ask Rico context and all existing application data.
+- Updates the app and offline cache version to v1.5.1.
+
 Rico's Integrated Home Utilities v1.5.0 — COGEA CBU Monitor
 
 - Removes the editable Camella Beginning Balance panel and the Automatic Monthly Dues reminder panel.
