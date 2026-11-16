@@ -1,3 +1,11 @@
+Rico's Integrated Home Utilities v1.4.1 — Automatic Camella Monthly Dues
+
+- Fixes the Camella monthly due at ₱300 and makes the due field read-only for new rows.
+- Automatically creates one ₱300 Camella due dated on the first day of each month.
+- Adds missed monthly dues on the next app opening when the app was closed on the first, with duplicate-month protection.
+- Existing Camella rows and all other saved application data remain unchanged.
+- Updates the app and offline cache version to v1.4.1.
+
 Rico's Integrated Home Utilities v1.4.0 — Camella Monthly Dues Monitor
 
 - Adds an eighth tab, Camella Monthly Dues, between Billing Lab and AI Center.

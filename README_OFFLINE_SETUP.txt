@@ -1,6 +1,6 @@
-v1.4.0 (cumulative): Adds Camella Monthly Dues as an eighth tab between Billing Lab and AI Center. It tracks beginning balance, arrears, payments, running balance, OR number/date and automatic OR difference, with add/edit/delete, CSV export and JSON backup/restore support. Ask Rico and all previous functionality remain available. After GitHub deployment, use Backup > Check Updates and Update Now.
+v1.4.1 (cumulative): Camella Monthly Dues now adds a fixed ₱300 due automatically on the first of every month. If the app was closed, missed dues are created on the next opening without duplicating a month. The Camella tab, Ask Rico and all previous functionality remain available. After GitHub deployment, use Backup > Check Updates and Update Now.
 
-Rico's Integrated Home Utilities – Smart Solutions v1.4.0
+Rico's Integrated Home Utilities – Smart Solutions v1.4.1
 
 UPLOAD ALL SIX FILES into the same GitHub Pages repository directory:
 - index.html
@@ -27,7 +27,9 @@ The app continues to store records only in browser localStorage using the origin
 key rico-utility-monitor-v1. Update does not clear those records. Avoid clearing
 Safari website data. Keep periodic JSON backups in a separate location.
 
-VERSION v1.4.0 (CUMULATIVE)
+VERSION v1.4.1 (CUMULATIVE)
+- Fixes Camella Monthly Dues at ₱300 and adds one due automatically on the first of each month.
+- When the app is closed on the first, any missed month is added on the next opening with duplicate protection.
 - Adds Camella Monthly Dues as the eighth tab between Billing Lab and AI Center.
 - Tracks beginning balance, monthly arrears, payments, running balances, OR number/date and OR differences.
 - Includes Camella add/edit/delete, CSV export and backward-compatible JSON backup/restore.
