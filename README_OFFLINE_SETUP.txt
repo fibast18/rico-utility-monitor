@@ -1,6 +1,6 @@
-v1.4.3 (cumulative): Ask Rico and the free local Ask AI now detect Camella Monthly Dues. With read-only sharing enabled, paid Ask Rico receives verified Camella payments, balances, receipt status and relevant rows selected on this device. All previous functionality remains available. After GitHub deployment, use Backup > Check Updates and Update Now.
+v1.5.0 (cumulative): Adds a read-only COGEA CBU tab after Camella. It projects ₱1,000 month-end salary deductions from a fixed ₱4,601 beginning balance to the ₱25,000 maximum, with a final ₱399 deduction. Ask Rico and local Ask AI understand the schedule. Camella setup/reminder panels were removed while its Beginning history row remains. After GitHub deployment, use Backup > Check Updates and Update Now.
 
-Rico's Integrated Home Utilities – Smart Solutions v1.4.3
+Rico's Integrated Home Utilities – Smart Solutions v1.5.0
 
 UPLOAD ALL SIX FILES into the same GitHub Pages repository directory:
 - index.html
@@ -27,7 +27,10 @@ The app continues to store records only in browser localStorage using the origin
 key rico-utility-monitor-v1. Update does not clear those records. Avoid clearing
 Safari website data. Keep periodic JSON backups in a separate location.
 
-VERSION v1.4.3 (CUMULATIVE)
+VERSION v1.5.0 (CUMULATIVE)
+- Adds the read-only COGEA CBU month-end savings schedule through the ₱25,000 maximum.
+- Removes Camella's Beginning Balance input panel and monthly-dues reminder panel while retaining the history Beginning row.
+- Adds COGEA CBU awareness to paid Ask Rico and free local Ask AI.
 - Adds Camella Monthly Dues awareness to paid Ask Rico and the free local Ask AI.
 - Shares Camella facts only when the existing read-only data-sharing checkbox is enabled.
 - Removes the unnecessary fixed ₱300 input from historical Camella entry.
