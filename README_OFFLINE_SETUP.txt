@@ -1,6 +1,6 @@
-v1.4.1 (cumulative): Camella Monthly Dues now adds a fixed ₱300 due automatically on the first of every month. If the app was closed, missed dues are created on the next opening without duplicating a month. The Camella tab, Ask Rico and all previous functionality remain available. After GitHub deployment, use Backup > Check Updates and Update Now.
+v1.4.2 (cumulative): The fixed ₱300 field is removed from historical Camella entry because the amount is applied internally. Camella HOA history now shows newest transactions first while balances remain correctly calculated in date order. All previous functionality remains available. After GitHub deployment, use Backup > Check Updates and Update Now.
 
-Rico's Integrated Home Utilities – Smart Solutions v1.4.1
+Rico's Integrated Home Utilities – Smart Solutions v1.4.2
 
 UPLOAD ALL SIX FILES into the same GitHub Pages repository directory:
 - index.html
@@ -27,7 +27,9 @@ The app continues to store records only in browser localStorage using the origin
 key rico-utility-monitor-v1. Update does not clear those records. Avoid clearing
 Safari website data. Keep periodic JSON backups in a separate location.
 
-VERSION v1.4.1 (CUMULATIVE)
+VERSION v1.4.2 (CUMULATIVE)
+- Removes the unnecessary fixed ₱300 input from historical Camella entry.
+- Displays Camella HOA transactions newest-first without changing chronological calculations.
 - Fixes Camella Monthly Dues at ₱300 and adds one due automatically on the first of each month.
 - When the app is closed on the first, any missed month is added on the next opening with duplicate protection.
 - Adds Camella Monthly Dues as the eighth tab between Billing Lab and AI Center.
