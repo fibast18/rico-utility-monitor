@@ -1,3 +1,14 @@
+Rico's Integrated Home Utilities v1.5.0 — COGEA CBU Monitor
+
+- Removes the editable Camella Beginning Balance panel and the Automatic Monthly Dues reminder panel.
+- Retains the Camella Beginning row at the bottom of its HOA history table.
+- Adds a read-only COGEA CBU tab immediately after Camella Monthly Dues.
+- Uses a fixed ₱4,601 beginning CBU, ₱1,000 deductions on each month end starting May 31, 2026, and a ₱25,000 maximum.
+- Automatically reduces the final deduction to ₱399 so the projected balance stops exactly at ₱25,000.
+- Distinguishes posted deductions through today from future scheduled deductions; no COGEA fields are editable.
+- Adds COGEA CBU awareness to paid Ask Rico and free local Ask AI while preserving the existing data-sharing control.
+- Updates the app and offline cache version to v1.5.0.
+
 Rico's Integrated Home Utilities v1.4.3 — Ask Rico Camella Awareness
 
 - Adds Camella Monthly Dues to the owner-authorized, read-only context shared with paid Ask Rico.
