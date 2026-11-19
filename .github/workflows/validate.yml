@@ -1,0 +1,42 @@
+name: Validate application
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check JavaScript, PWA assets and release metadata
+        run: |
+          node <<'NODE'
+          const assert = require('node:assert/strict');
+          const fs = require('node:fs');
+          const vm = require('node:vm');
+          const html = fs.readFileSync('index.html', 'utf8');
+          const worker = fs.readFileSync('sw.js', 'utf8');
+          const manifest = JSON.parse(fs.readFileSync('manifest.webmanifest', 'utf8'));
+          const version = html.match(/<meta name="app-version" content="(\d+\.\d+\.\d+)">/)?.[1];
+          assert.ok(version, 'Missing semantic app-version metadata');
+          for (const marker of ["APP_VERSION='" + version + "'", 'Version ' + version, 'Developed by: Engr. Rico J. Pono']) {
+            assert.ok(html.includes(marker), 'Missing HTML marker: ' + marker);
+          }
+          assert.ok(worker.includes("CACHE_NAME='rico-home-utilities-shell-v" + version + "'"));
+          for (const file of ['CHANGELOG.txt', 'README_OFFLINE_SETUP.txt']) {
+            assert.ok(fs.readFileSync(file, 'utf8').split('\n')[0].includes('v' + version), file + ' version mismatch');
+          }
+          assert.equal(manifest.display, 'standalone');
+          for (const path of [manifest.start_url, ...manifest.icons.map(icon => icon.src), 'apple-touch-icon.png']) {
+            assert.ok(fs.existsSync(path), 'Missing PWA asset: ' + path);
+          }
+          const scripts = [...html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi)];
+          assert.ok(scripts.length, 'Missing application script');
+          for (const [, script] of scripts) new vm.Script(script);
+          new vm.Script(worker);
+          NODE
