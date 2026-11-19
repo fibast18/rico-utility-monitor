@@ -1,9 +1,10 @@
-name: Validate application
+name: Validate and publish application
 on:
   pull_request:
     branches: [main]
   push:
     branches: [main]
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -40,3 +41,29 @@ jobs:
           for (const [, script] of scripts) new vm.Script(script);
           new vm.Script(worker);
           NODE
+  publish:
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    needs: validate
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    concurrency:
+      group: github-pages
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+      - name: Stage public app files
+        run: |
+          mkdir _site
+          cp index.html sw.js manifest.webmanifest apple-touch-icon.png home-utilities-icon-192.png home-utilities-icon-512.png CHANGELOG.txt README_OFFLINE_SETUP.txt _site/
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - name: Publish to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
