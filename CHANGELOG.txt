@@ -1,3 +1,10 @@
+Rico's Integrated Home Utilities v1.6.0 — Optional Firebase Device Sync
+
+- Adds Device Sync under Backup. Each installation uses a background Firebase identity and requires owner authorization.
+- Existing records stay local until the owner starts the first upload. A second installation with its own records must reconcile its backups before joining.
+- Both devices can edit shared records. Changes to different entries merge; the last submitted change wins for the same entry. Offline edits remain local until reconnected.
+- Preserves existing JSON backups and local data. The Firebase client and offline cache are versioned with the release.
+
 Rico's Integrated Home Utilities v1.5.2 — Backup Tab Cleanup
 
 - Removes the GitHub Pages hosting section from Backup and keeps the existing erase control under Device Data.
