@@ -1,12 +1,12 @@
-/* Rico's Integrated Home Utilities – offline shell v1.5.2.
+/* Rico's Integrated Home Utilities – offline shell v1.6.0.
    GitHub Pages: upload this file beside index.html (same repository folder).
    Cache Storage is APP CODE ONLY. User records remain in localStorage.
 */
-const CACHE_NAME='rico-home-utilities-shell-v1.5.2';
+const CACHE_NAME='rico-home-utilities-shell-v1.6.0';
 const CACHE_PREFIX='rico-home-utilities-shell-v';
 const SCOPE=self.registration.scope;
 const SHELL_URL=new URL('./index.html',SCOPE).href;
-const OPTIONAL_ASSETS=['./manifest.webmanifest','./apple-touch-icon.png','./home-utilities-icon-192.png','./home-utilities-icon-512.png'];
+const OPTIONAL_ASSETS=['./firebase-sync.js','./manifest.webmanifest','./apple-touch-icon.png','./home-utilities-icon-192.png','./home-utilities-icon-512.png'];
 
 async function saveAppShell(){
   const cache=await caches.open(CACHE_NAME);

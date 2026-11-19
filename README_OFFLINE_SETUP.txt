@@ -1,12 +1,23 @@
+v1.6.0 — Optional Firebase Device Sync
+
+Before enabling sync, publish firestore.rules in the dedicated rico-home-utilities Firestore project and enable Firebase Anonymous Authentication.
+On each installation open Backup > Device Sync > Get device ID / Check connection.
+In Firestore create the collection authorizedDevices, with a document whose ID exactly matches each displayed device ID. Add enabled (boolean) = true. Keep these documents writable only from the Firebase console.
+Export JSON backups on both devices. On the source device, check the connection and choose Upload this device’s records. On a second installation with no independently entered records, choose Join shared records. Reconcile both backups first if both devices have records.
+Both devices can edit. Local offline changes sync when connected. Changes to different records merge, and the last submitted change wins for the same record. The shared document supports up to 850,000 bytes of records.
+Sync retains the app's local records and JSON exports. While synced, use Merge to restore JSON backups. The existing erase-all control is disabled.
+If a device is replaced or browser site data is cleared, authorize its new device ID and remove the old allowlist document if retired.
+
 v1.5.2: Removes the GitHub Pages hosting section from Backup. The existing erase control is under Device Data.
 
 v1.5.1 (cumulative): Removes the prohibited Cash Out column and makes each COGEA Cash In editable with ₱1,000 as the default. Enter the full COGEA-reported amount when interest is added; later balances recalculate and stop at ₱25,000. Adjustments persist and are included in JSON backup/restore. After GitHub deployment, use Backup > Check Updates and Update Now.
 
-Rico's Integrated Home Utilities – Smart Solutions v1.5.2
+Rico's Integrated Home Utilities – Smart Solutions v1.6.0
 
-UPLOAD ALL SIX FILES into the same GitHub Pages repository directory:
+UPLOAD THE APP FILES into the same GitHub Pages repository directory:
 - index.html
 - sw.js                    (required for offline first launch after installation)
+- firebase-sync.js
 - manifest.webmanifest
 - apple-touch-icon.png
 - home-utilities-icon-192.png
@@ -14,7 +25,7 @@ UPLOAD ALL SIX FILES into the same GitHub Pages repository directory:
 
 ONE-TIME SETUP
 1. BACK UP your existing app records in Backup > Download JSON Backup.
-2. Upload all six files to the SAME directory in your existing GitHub repo.
+2. Upload all app files to the SAME directory in your existing GitHub repo.
 3. Open the published HTTPS site once WHILE ONLINE.
 4. Go to Backup > Offline Access. Wait for "Offline Ready"; if needed tap "Save for Offline Use".
 5. On iPhone, add this same website to Home Screen using Safari > Share > Add to Home Screen (if not installed yet).

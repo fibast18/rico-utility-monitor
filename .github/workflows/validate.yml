@@ -41,6 +41,7 @@ jobs:
           for (const [, script] of scripts) new vm.Script(script);
           new vm.Script(worker);
           NODE
+          node --input-type=module --check < firebase-sync.js
   publish:
     if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
     needs: validate
@@ -60,7 +61,7 @@ jobs:
       - name: Stage public app files
         run: |
           mkdir _site
-          cp index.html sw.js manifest.webmanifest apple-touch-icon.png home-utilities-icon-192.png home-utilities-icon-512.png CHANGELOG.txt README_OFFLINE_SETUP.txt _site/
+          cp index.html sw.js firebase-sync.js manifest.webmanifest apple-touch-icon.png home-utilities-icon-192.png home-utilities-icon-512.png CHANGELOG.txt README_OFFLINE_SETUP.txt _site/
       - uses: actions/upload-pages-artifact@v3
         with:
           path: _site
