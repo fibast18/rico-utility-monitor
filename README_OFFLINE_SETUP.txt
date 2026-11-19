@@ -1,6 +1,8 @@
+v1.5.2: Removes the GitHub Pages hosting section from Backup. The existing erase control is under Device Data.
+
 v1.5.1 (cumulative): Removes the prohibited Cash Out column and makes each COGEA Cash In editable with ₱1,000 as the default. Enter the full COGEA-reported amount when interest is added; later balances recalculate and stop at ₱25,000. Adjustments persist and are included in JSON backup/restore. After GitHub deployment, use Backup > Check Updates and Update Now.
 
-Rico's Integrated Home Utilities – Smart Solutions v1.5.1
+Rico's Integrated Home Utilities – Smart Solutions v1.5.2
 
 UPLOAD ALL SIX FILES into the same GitHub Pages repository directory:
 - index.html
@@ -27,9 +29,9 @@ The app continues to store records only in browser localStorage using the origin
 key rico-utility-monitor-v1. Update does not clear those records. Avoid clearing
 Safari website data. Keep periodic JSON backups in a separate location.
 
-VERSION v1.5.1 (CUMULATIVE)
+VERSION v1.5.2 (CUMULATIVE)
 - Removes the COGEA CBU Cash Out column because withdrawals are not permitted.
-- Adds the read-only COGEA CBU month-end savings schedule through the ₱25,000 maximum.
+- Includes the editable COGEA CBU month-end savings schedule through the ₱25,000 maximum.
 - Removes Camella's Beginning Balance input panel and monthly-dues reminder panel while retaining the history Beginning row.
 - Adds COGEA CBU awareness to paid Ask Rico and free local Ask AI.
 - Adds Camella Monthly Dues awareness to paid Ask Rico and the free local Ask AI.
