@@ -1,3 +1,8 @@
+Rico's Integrated Home Utilities v1.5.2 — Backup Tab Cleanup
+
+- Removes the GitHub Pages hosting section from Backup and keeps the existing erase control under Device Data.
+- Updates the app and offline cache version to v1.5.2.
+
 Rico's Integrated Home Utilities v1.5.1 — Editable COGEA Cash In
 
 - Removes the Cash Out column because COGEA CBU withdrawals are not permitted.
