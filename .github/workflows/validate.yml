@@ -44,6 +44,7 @@ jobs:
           node --input-type=module --check < firebase-sync.js
           node --input-type=module --check < utility-finance-bridge.js
           node check-finance-link.mjs
+          node check-finance-approval.mjs
   publish:
     if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
     needs: validate
