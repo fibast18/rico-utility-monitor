@@ -1,12 +1,12 @@
-/* Rico's Integrated Home Utilities – offline shell v1.6.7.
+/* Rico's Integrated Home Utilities – offline shell v1.6.8.
    GitHub Pages: upload this file beside index.html (same repository folder).
    Cache Storage is APP CODE ONLY. User records remain in localStorage.
 */
-const CACHE_NAME='rico-home-utilities-shell-v1.6.7';
+const CACHE_NAME='rico-home-utilities-shell-v1.6.8';
 const CACHE_PREFIX='rico-home-utilities-shell-v';
 const SCOPE=self.registration.scope;
 const SHELL_URL=new URL('./index.html',SCOPE).href;
-const OPTIONAL_ASSETS=['./utility-finance-bridge.js','./firebase-sync.js','./manifest.webmanifest','./apple-touch-icon.png','./home-utilities-icon-192.png','./home-utilities-icon-512.png'];
+const OPTIONAL_ASSETS=['./utility-finance-bridge.js','./firebase-sync.js?v=1.6.8','./manifest.webmanifest','./apple-touch-icon.png','./home-utilities-icon-192.png','./home-utilities-icon-512.png'];
 
 async function saveAppShell(){
   const cache=await caches.open(CACHE_NAME);
@@ -76,7 +76,7 @@ self.addEventListener('fetch',event=>{
     return;
   }
   // Cache icons/manifest, with network fallback. Other requests stay untouched.
-  if(OPTIONAL_ASSETS.some(asset=>url.pathname===new URL(asset,SCOPE).pathname)){
+  if(OPTIONAL_ASSETS.some(asset=>url.href===new URL(asset,SCOPE).href)){
     event.respondWith((async()=>{
       const cached=await caches.match(req,{ignoreSearch:true});
       if(cached)return cached;

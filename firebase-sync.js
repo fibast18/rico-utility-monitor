@@ -343,3 +343,5 @@ export function createSync({ read, baseline, persist, display, readPayments = ()
     grantFinanceReader
   };
 }
+
+createSync.version = '1.6.8';
