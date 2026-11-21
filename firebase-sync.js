@@ -1,3 +1,5 @@
+import { buildFinancePaidSnapshot } from './utility-finance-bridge.js';
+
 const config = {
   apiKey: "AIzaSyDfneSHThNcQ207t1g7OzJVfaUIrNVh2jo",
   authDomain: "rico-home-utilities.firebaseapp.com",
@@ -51,10 +53,12 @@ export function createSync({ read, baseline, persist, display }) {
   let subscribed = false;
   let hasCloud = false;
   let remoteChanged = false;
+  let financeStatus = 'For Rico Finances AI, authorize its connection ID once in this app.';
+  let lastFinancePublished = '';
 
   function show(text = message) {
     message = text;
-    display({ device, message, busy, allowStart: authorized && !baseline, hasCloud });
+    display({ device, message, busy, allowStart: authorized && !baseline, hasCloud, financeStatus });
   }
 
   function report(error) {
@@ -89,6 +93,56 @@ export function createSync({ read, baseline, persist, display }) {
     const state = JSON.parse(data.payload);
     entries(state);
     return state;
+  }
+
+  async function publishPaidSummary(cloud) {
+    if(!cloud)return;
+    try {
+      const summary=buildFinancePaidSnapshot(cloud);
+      const fingerprint=JSON.stringify(summary);
+      if(fingerprint===lastFinancePublished)return;
+      const {db,store}=await connect();
+      await db.setDoc(db.doc(store,'household','financePaidUtilities'),{
+        ...summary,updatedAt:new Date().toISOString()
+      });
+      lastFinancePublished=fingerprint;
+      financeStatus='Paid utilities are available for authorized Finances devices (read-only).';
+      show();
+    } catch(error) {
+      // Never fail, roll back or overwrite the original Firebase household sync.
+      financeStatus='Finance link pending: '+(error.code==='permission-denied'?
+        'publish the updated Firestore rules once.':String(error.message||error).slice(0,130));
+      show();
+    }
+  }
+
+  async function grantFinanceReader(uid) {
+    const id=String(uid||'').trim();
+    if(!/^[A-Za-z0-9_-]{10,160}$/.test(id)){
+      financeStatus='Paste the Finances connection ID from its Cash Flow tab.';
+      show();return;
+    }
+    if(id===device){
+      financeStatus='The Finances ID must be different from this Home Utilities device ID.';
+      show();return;
+    }
+    if(!authorized){
+      financeStatus='Check your Home Utilities Firebase connection first.';
+      show();return;
+    }
+    try {
+      const {db,store}=await connect();
+      // Firestore security rules allow only CREATE of finance_viewer memberships.
+      // An existing household device cannot be overwritten by this action.
+      await db.setDoc(db.doc(store,'authorizedDevices',id),{
+        enabled:true,role:'finance_viewer',addedAt:new Date().toISOString()
+      });
+      financeStatus='Finances connection approved. Open Rico Finances AI to complete sync.';
+    } catch(error) {
+      financeStatus='Approval failed: '+(error.code==='permission-denied'?
+        'deploy the updated Firestore rules, then try again.':String(error.message||error).slice(0,125));
+    }
+    show();
   }
 
   async function run(mode, expected) {
@@ -147,6 +201,7 @@ export function createSync({ read, baseline, persist, display }) {
           report(error);
         });
       }
+      if(cloud)await publishPaidSummary(cloud);
       show(baseline ? 'Connected. Changes sync automatically while online.' :
         hasCloud ? 'Cloud records are available. Join only after backing up this device.' :
         'Authorized. Back up this device before starting the first upload.');
@@ -195,6 +250,7 @@ export function createSync({ read, baseline, persist, display }) {
         'Upload the records on this device to your private Firebase database? Export a JSON backup first.';
       if (confirm(prompt)) run(mode, local);
     },
-    refresh: () => show()
+    refresh: () => show(),
+    grantFinanceReader
   };
 }
