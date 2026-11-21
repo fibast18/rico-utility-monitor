@@ -74,7 +74,15 @@ function encode(data) {
   return { schema: 1, payload };
 }
 
-export function createSync({ read, baseline, persist, display }) {
+function applyPayments(data, payments) {
+  return { ...data, records: data.records.map(row => {
+    if (!Object.hasOwn(payments, row.id)) return row;
+    const { status, updatedAt } = payments[row.id];
+    return { ...row, status, updatedAt };
+  }) };
+}
+
+export function createSync({ read, baseline, persist, display, readPayments = () => ({}) }) {
   let connection, device = '', busy = false, attempted = false, authorized = false;
   let message = 'Sync is off. Get this installation’s device ID to authorize it.';
   let timer;
@@ -227,6 +235,7 @@ export function createSync({ read, baseline, persist, display }) {
       const { db, ref, store } = await connect();
       const local = read();
       const prior = baseline;
+      const sentPayments = readPayments();
       let cloud;
       if (mode === 'sync' && !prior) {
         cloud = decode(await db.getDocFromServer(ref));
@@ -240,7 +249,7 @@ export function createSync({ read, baseline, persist, display }) {
           }
           if (!remote) throw Error('Cloud records are missing. Local records were preserved.');
           if (mode === 'join') return remote;
-          const next = merge(prior, local, remote);
+          const next = applyPayments(merge(prior, local, remote), sentPayments);
           if (!same(next, remote)) transaction.set(ref, encode(next));
           return next;
         });
@@ -250,8 +259,10 @@ export function createSync({ read, baseline, persist, display }) {
       if (mode === 'join' && !same(read(), expected)) throw Error('This device changed while connecting. Check its backup before joining again.');
       if ((prior || mode !== 'sync') && cloud) {
         const current = read();
-        const next = mode === 'join' ? cloud : merge(local, current, cloud);
-        persist(next, cloud);
+        const pending = Object.fromEntries(Object.entries(readPayments())
+          .filter(([id, payment]) => !same(payment, sentPayments[id])));
+        const next = mode === 'join' ? cloud : applyPayments(merge(local, current, cloud), pending);
+        persist(next, cloud, pending);
         baseline = cloud;
         if (!same(next, cloud)) schedule();
       }
@@ -288,7 +299,7 @@ export function createSync({ read, baseline, persist, display }) {
     } finally {
       busy = false;
       show();
-      if (baseline && navigator.onLine && authorized && (remoteChanged || !same(read(), baseline))) {
+      if (baseline && navigator.onLine && authorized && (remoteChanged || Object.keys(readPayments()).length || !same(read(), baseline))) {
         remoteChanged = false;
         schedule(5000);
       }

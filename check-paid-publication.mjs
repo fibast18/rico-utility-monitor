@@ -30,6 +30,7 @@ const initial={
 let local=structuredClone(initial),baseline=structuredClone(initial),cloud=structuredClone(initial);
 let financeDoc=null,financeWrites=0,failPaidSummary=false;
 const status=[];
+let pendingPayments={};
 const fakeDb={
  getFirestore:()=>({}),
  doc:(_store,...parts)=>parts.join('/'),
@@ -75,7 +76,8 @@ new Script(source,{filename:'firebase-sync.js mocked publisher'})
 const sync=context.__createSync({
  read:()=>structuredClone(local),
  baseline,
- persist:(next,remote)=>{local=structuredClone(next);baseline=structuredClone(remote)},
+ readPayments:()=>pendingPayments,
+ persist:(next,remote,pending)=>{local=structuredClone(next);baseline=structuredClone(remote);pendingPayments=pending},
  display:data=>status.push(data)
 });
 function change(id,newStatus){
@@ -118,3 +120,14 @@ assert.match(status.at(-1).message,/Paid bills NOT linked/);
 assert.match(status.at(-1).financeStatus,/Firebase refused summary access/);
 assert.equal(financeWrites,4);
 console.log('PASS: paid/unpaid summary auto-publish, stale snapshot correction, independent records, and permission failures isolated');
+
+failPaidSummary=false;
+change('water-B','paid');
+pendingPayments={'water-B':{status:'paid',updatedAt:local.records.find(x=>x.id==='water-B').updatedAt}};
+cloud.records.find(x=>x.id==='water-B').updatedAt='2099-01-01';
+await sync.check();
+assert.equal(cloud.records.find(x=>x.id==='water-B').status,'paid');
+assert.equal(local.records.find(x=>x.id==='water-B').status,'paid');
+assert.equal(Object.keys(pendingPayments).length,0);
+assert(financeDoc.entries.some(x=>x.type==='water'));
+console.log('PASS: explicitly marked payment survives stale cloud status and is acknowledged only after write');

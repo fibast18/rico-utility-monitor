@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#12213a">
-<title>Rico's Integrated Home Utilities | v1.6.6</title>
-<meta name="app-version" content="1.6.6">
+<title>Rico's Integrated Home Utilities | v1.6.7</title>
+<meta name="app-version" content="1.6.7">
 <meta name="description" content="Private household utility and fuel expense tracker for water, electricity, car, motorcycle and LPG.">
 <meta name="apple-mobile-web-app-title" content="Rico Utilities">
 <meta name="application-name" content="Rico's Integrated Home Utilities">
@@ -133,7 +133,7 @@ body{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;paddi
 </div>
 <main class="shell">
 <div id="app"></div>
-<footer class="app-footer" aria-label="Application information"><span class="developer-credit">Developed by: Engr. Rico J. Pono</span><span class="footer-release"><span>Rico's Integrated Home Utilities</span><span id="appVersion">Version 1.6.6</span></span></footer>
+<footer class="app-footer" aria-label="Application information"><span class="developer-credit">Developed by: Engr. Rico J. Pono</span><span class="footer-release"><span>Rico's Integrated Home Utilities</span><span id="appVersion">Version 1.6.7</span></span></footer>
 </main>
 <!-- v1.3.4: Private Ask Rico Cloudflare Worker chat. No OpenAI API key is present in this public page. -->
 <section id="ricoChatPanel" class="rico-chat-panel" role="dialog" aria-label="Ask Rico paid AI chat" aria-modal="false" hidden>
@@ -170,7 +170,7 @@ body{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;paddi
 <div id="toast" class="message" role="status" aria-live="polite"></div>
 <script>
 (()=>{'use strict';
-const APP_VERSION='1.6.6';
+const APP_VERSION='1.6.7';
 const appBar=document.getElementById('fixedAppBar');
 function syncAppBarHeight(){if(appBar)document.documentElement.style.setProperty('--app-bar-height',Math.ceil(appBar.getBoundingClientRect().height)+'px')}
 syncAppBarHeight();
@@ -201,7 +201,7 @@ function normalizeCbuOverrides(x){const out={};if(!x||typeof x!=='object'||Array
 
 const normalize=r=>{if(!r||typeof r!=='object'||!TYPES[r.type]||!validDate(r.date))return null;const amount=safeNum(r.amount);if(amount===null||amount<0)return null;return {id:String(r.id||id()),type:r.type,date:r.date,period:typeof r.period==='string'?r.period:'',startDate:validDate(r.startDate)?r.startDate:'',billedAmount:safeNum(r.billedAmount),previous:safeNum(r.previous),current:safeNum(r.current),liters:safeNum(r.liters),odometer:safeNum(r.odometer),kg:safeNum(r.kg),amount,due:validDate(r.due)?r.due:'',status:r.status==='unpaid'?'unpaid':'paid',note:String(r.note||'').slice(0,500),createdAt:String(r.createdAt||new Date().toISOString()),updatedAt:String(r.updatedAt||new Date().toISOString())}};
 let db={records:[],dailyReadings:[],camellaDues:{beginningBalance:0,entries:[]},cogeaCbuOverrides:{}},page='overview',filter={type:'all',month:'all',search:''},editId=null,hoaEditId=null,toastTimer;
-let sync, syncBaseline, storageHealthy=true, latestSyncView=null;
+let sync, syncBaseline, pendingPayments={}, storageHealthy=true, latestSyncView=null;
 function showSyncEverywhere(view){
   latestSyncView=view;
   const message=String(view?.message||'');
@@ -227,7 +227,7 @@ function showSyncEverywhere(view){
     if(warning)notice.textContent+=' · '+finance;
   }
 }
-try{const raw=localStorage.getItem(KEY);if(raw){const data=JSON.parse(raw);syncBaseline=data.firebaseSyncBaseline;if(Array.isArray(data.records))db.records=data.records.map(normalize).filter(Boolean);if(Array.isArray(data.dailyReadings))db.dailyReadings=data.dailyReadings.map(normalizeDaily).filter(Boolean);if(data.camellaDues)db.camellaDues=normalizeHoa(data.camellaDues);if(data.cogeaCbuOverrides)db.cogeaCbuOverrides=normalizeCbuOverrides(data.cogeaCbuOverrides)}}catch(e){storageHealthy=false;alert('Saved records could not be loaded. Do NOT add new records until you recover your JSON backup. Details: '+e.message);}
+try{const raw=localStorage.getItem(KEY);if(raw){const data=JSON.parse(raw);syncBaseline=data.firebaseSyncBaseline;pendingPayments=data.pendingPayments||{};if(Array.isArray(data.records))db.records=data.records.map(normalize).filter(Boolean);if(Array.isArray(data.dailyReadings))db.dailyReadings=data.dailyReadings.map(normalizeDaily).filter(Boolean);if(data.camellaDues)db.camellaDues=normalizeHoa(data.camellaDues);if(data.cogeaCbuOverrides)db.cogeaCbuOverrides=normalizeCbuOverrides(data.cogeaCbuOverrides)}}catch(e){storageHealthy=false;alert('Saved records could not be loaded. Do NOT add new records until you recover your JSON backup. Details: '+e.message);}
 // Earlier imported backups can contain the same record ID more than once.
 // Always keep BOTH original bills, but give later duplicates stable, distinct IDs.
 // Use identical repair naming as firebase-sync.js to avoid cross-device collisions.
@@ -248,7 +248,7 @@ function repairDuplicateRecordIds(records){
   }
   return repaired;
 }
-function save(){try{localStorage.setItem(KEY,JSON.stringify({...db,firebaseSyncBaseline:syncBaseline}));sync?.saved();return true}catch(e){alert('Could not save on this browser/device. Export a backup and check private browsing/storage settings. '+e.message);return false}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify({...db,firebaseSyncBaseline:syncBaseline,pendingPayments}));sync?.saved();return true}catch(e){alert('Could not save on this browser/device. Export a backup and check private browsing/storage settings. '+e.message);return false}}
 const repairedExistingIds=repairDuplicateRecordIds(db.records);
 if(repairedExistingIds){
   // No amount, status, record date or transaction is edited in this migration.
@@ -735,8 +735,10 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-page],[dat
  }
  const row=matches[0],priorStatus=row.status,priorUpdated=row.updatedAt;
  const newStatus=priorStatus==='paid'?'unpaid':'paid';
+ const previousPayments=pendingPayments;
  row.status=newStatus;row.updatedAt=new Date().toISOString();
- if(!save()){row.status=priorStatus;row.updatedAt=priorUpdated;break;}
+ if(syncBaseline)pendingPayments={...pendingPayments,[key]:{status:newStatus,updatedAt:row.updatedAt}};
+ if(!save()){pendingPayments=previousPayments;row.status=priorStatus;row.updatedAt=priorUpdated;break;}
  render();
  notice(TYPES[row.type].name+' · '+dateLabel(row.date)+' marked '+(newStatus==='paid'?'Paid':'Unpaid')+'.');
  break;
@@ -757,8 +759,10 @@ document.addEventListener('click',e=>{const b=e.target.closest('[data-page],[dat
        sync=createSync({
          read:()=>structuredClone(db),
          baseline:syncBaseline,
-         persist:(next,baseline)=>{
-           localStorage.setItem(KEY,JSON.stringify({...next,firebaseSyncBaseline:baseline}));
+         readPayments:()=>pendingPayments,
+         persist:(next,baseline,payments)=>{
+           localStorage.setItem(KEY,JSON.stringify({...next,firebaseSyncBaseline:baseline,pendingPayments:payments}));
+           pendingPayments=payments;
            const changed=JSON.stringify(db)!==JSON.stringify(next);
            db=next;
            syncBaseline=baseline;

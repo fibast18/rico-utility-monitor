@@ -1,3 +1,5 @@
+v1.6.7 — Holds payment changes locally until Firebase confirms the write.
+
 v1.6.6 — Payment status and linked Finances sync fixes.
 
 v1.6.5 — Real-time Records refresh and linked Finances diagnostics.

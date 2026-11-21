@@ -1,3 +1,7 @@
+Rico's Integrated Home Utilities v1.6.7 — Retain pending payment changes
+
+- Keeps explicit Paid and Unpay changes on the device until Firebase confirms them.
+
 Rico's Integrated Home Utilities v1.6.6 — Keep bill payment status during sync
 
 - Preserve payment status when another device edits other fields of the same bill.
