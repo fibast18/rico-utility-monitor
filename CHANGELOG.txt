@@ -1,3 +1,11 @@
+Rico's Integrated Home Utilities v1.6.5 — Live payment statuses and real sync diagnostics
+
+- Redraws Records immediately after Firebase reconciles a changed bill, preventing stale Paid/Unpaid badges from remaining visible.
+- Replaces the misleading static "Private on this device" badge with actual cloud and paid-summary publication status.
+- Shows live cloud/Finances sync diagnostics above the Records filters and in Backup.
+- Reports the actual number and value of paid expenses published to Firebase, without assuming Rico Finances AI has permission to read them.
+- Keeps the local utility database, earlier duplicate-ID safeguards, payment amounts, and existing authorized users unchanged.
+
 Rico's Integrated Home Utilities v1.6.4 — Independent Paid/Unpaid records and Finance sync
 
 - Keeps each utility bill's payment status independent; older duplicate record IDs are assigned stable distinct identifiers without changing dates, amounts, or Paid/Unpaid values.
