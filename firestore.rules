@@ -1,17 +1,52 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    function authorizedDevice() {
-      return request.auth != null
-        && get(/databases/$(database)/documents/authorizedDevices/$(request.auth.uid)).data.enabled == true;
+    // Existing household devices remain authorized for read/write. A dedicated
+    // finance_viewer may read ONLY the minimal paid-expense snapshot.
+    function membership() {
+      return get(/databases/$(database)/documents/authorizedDevices/$(request.auth.uid)).data;
     }
+    function active() {
+      return request.auth != null && membership().enabled == true;
+    }
+    function writer() {
+      return active() && membership().role != 'finance_viewer';
+    }
+
     match /household/utilities {
-      allow get: if authorizedDevice();
-      allow create, update: if authorizedDevice()
+      allow get: if writer();
+      allow create, update: if writer()
         && request.resource.data.keys().hasOnly(['schema', 'payload'])
         && request.resource.data.schema == 1
         && request.resource.data.payload is string
         && request.resource.data.payload.size() <= 850000;
+    }
+
+    // This document contains ONLY dated, paid utility/HOA amounts and IDs.
+    // finance_viewer cannot read full utility records or write any records.
+    match /household/financePaidUtilities {
+      allow get: if active();
+      allow create, update: if writer()
+        && request.resource.data.keys().hasOnly(['schema', 'source', 'updatedAt', 'entries'])
+        && request.resource.data.schema == 1
+        && request.resource.data.source == 'rico-utility-monitor'
+        && request.resource.data.updatedAt is string
+        && request.resource.data.entries is list
+        && request.resource.data.entries.size() <= 3500;
+    }
+
+    // Allow an existing authorized household device to approve a new, *read-only*
+    // Finances device ID from the Home Utilities app. It cannot promote a viewer
+    // to a household writer, overwrite admin docs, or expose a public collection.
+    match /authorizedDevices/{deviceId} {
+      allow get: if writer();
+      allow create: if writer()
+        && request.resource.data.keys().hasOnly(['enabled','role','addedAt'])
+        && request.resource.data.enabled == true
+        && request.resource.data.role == 'finance_viewer'
+        && request.resource.data.addedAt is string
+        && deviceId.size() >= 10 && deviceId.size() <= 160;
+      allow delete: if writer() && resource.data.role == 'finance_viewer';
     }
   }
 }
