@@ -1,3 +1,13 @@
+v1.6.2 — Read-only paid utilities linking to Rico Finances AI.
+
+SETUP: First open Firebase Console → rico-home-utilities → Firestore Database → Rules. Replace the rules with the updated firestore.rules from this GitHub repository, and publish them. This preserves current utility editors and introduces a finance_viewer role that can read only household/financePaidUtilities, NOT household/utilities.
+
+Open an already authorized Home Utilities installation online, select Backup → Get device ID / Check connection, and confirm it says Connected. That publishes the minimal paid-expenses summary. Open Rico Finances AI → Cash Flow → Paid Home Utilities → Get connection ID and copy it. Return to Home Utilities → Backup → Connect Rico Finances AI, paste and approve that ID. Back in Finances, press Connect now once. Updates are automatic via Firebase whenever both apps are online; offline cached summaries remain read-only.
+
+Changing a bill to Unpaid removes it from linked expenses. Fuel, LPG and Camella payments are included; daily readings, estimates, HOA arrears and COGEA CBU are excluded. The existing utility 'date' is a billing/purchase record date, NOT a verified payment timestamp; review historical entries if their payment dates differ. For Camella, OR Date is used when present.
+
+On any device replacement, authorize its new Finances ID. Remove the old finance_viewer document in Firestore authorizedDevices to revoke access. Existing manual Cash Flow entries are preserved. Do not make the full household/utilities document public, and do not alter existing Firebase records.
+
 v1.6.1 — Camella HOA history centers the OR Difference column.
 
 v1.6.0 — Optional Firebase Device Sync
