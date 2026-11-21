@@ -1,3 +1,5 @@
+v1.6.8 — Uses matching app and Firebase sync versions after an update.
+
 v1.6.7 — Holds payment changes locally until Firebase confirms the write.
 
 v1.6.6 — Payment status and linked Finances sync fixes.

@@ -1,3 +1,7 @@
+Rico's Integrated Home Utilities v1.6.8 — Match app and payment sync versions
+
+- Loads the matching sync module for each release and blocks sync from an older cached module.
+
 Rico's Integrated Home Utilities v1.6.7 — Retain pending payment changes
 
 - Keeps explicit Paid and Unpay changes on the device until Firebase confirms them.
