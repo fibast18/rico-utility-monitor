@@ -10,7 +10,7 @@ service cloud.firestore {
       return request.auth != null && membership().enabled == true;
     }
     function writer() {
-      return active() && membership().role != 'finance_viewer';
+      return active() && membership().get('role', '') != 'finance_viewer';
     }
 
     match /household/utilities {
