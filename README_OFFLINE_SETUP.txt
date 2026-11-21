@@ -1,3 +1,7 @@
+v1.6.4 — Paid/Unpaid isolation and reliable Rico Finances AI link.
+
+Before updating, download your Home Utilities JSON backup in Backup → Protect your data. Then install the update through Check Updates. Existing utility entries and their Paid/Unpaid values are preserved. If older imports contain duplicate record IDs, the app will assign distinct IDs to later copies without changing bill amounts or status. After opening the updated app online, go to Backup → Get device ID / Check connection to confirm cloud sync, and check that the Finance link status says paid utilities are synced. In Rico Finances AI, expand Paid Home Utilities and confirm Live Firebase sync and current totals. If a Firebase permission error is shown, verify the published project rules; repository rules are not automatically deployed to Firebase.
+
 v1.6.3 — Read-only paid utilities linking to Rico Finances AI.
 After updating Home Utilities, paste the Finances connection ID and press Authorize read-only device. The button now reports "Authorizing...", "Success!", "Already authorized", or the exact blocking status below the button. If Firebase denies approval, confirm this Home Utilities installation is authorized and that the latest firestore.rules are published.
 
