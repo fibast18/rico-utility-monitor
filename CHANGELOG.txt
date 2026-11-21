@@ -1,4 +1,10 @@
-Rico's Integrated Home Utilities v1.6.2 — Read-only Rico Finances AI integration
+Rico's Integrated Home Utilities v1.6.3 — Read-only Rico Finances AI integration
+  
+- Fixes the read-only device authorization button silently doing nothing if Firebase was still initializing.
+- Automatically checks that Home Utilities is an authorized writer before approving the Finances reader ID; repeat approvals return a clear "Already authorized" message.
+- Shows explicit success, invalid ID, permission-denied, offline and initialization errors without changing household records or reader roles.
+- Keeps the original local utility data key, Firebase schema, and Finance Viewer permissions unchanged.
+
 
 - Publishes only paid electricity, water, fuel, LPG and recorded Camella dues payments to a separate Firebase summary document. Unpaid bills, notes, meter readings and COGEA savings are excluded.
 - Adds Backup → Connect Rico Finances AI for one-time authorization of a finance_viewer device ID. Finance viewers cannot read or edit the full utilities document once updated firestore.rules are deployed.
