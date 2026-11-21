@@ -1,4 +1,4 @@
-/* Rico's Integrated Home Utilities – offline shell v1.6.2.
+/* Rico's Integrated Home Utilities – offline shell v1.6.3.
    GitHub Pages: upload this file beside index.html (same repository folder).
    Cache Storage is APP CODE ONLY. User records remain in localStorage.
 */
