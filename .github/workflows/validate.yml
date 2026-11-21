@@ -47,6 +47,7 @@ jobs:
           node check-finance-approval.mjs
           node check-payment-sync.mjs
           node check-paid-publication.mjs
+          node check-records-live-status.mjs
   publish:
     if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
     needs: validate
