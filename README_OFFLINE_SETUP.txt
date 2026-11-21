@@ -1,3 +1,7 @@
+v1.6.5 — Real-time Records refresh and linked Finances diagnostics.
+
+Export your Home Utilities JSON backup before updating. Records now re-renders after incoming cloud updates and a live status replaces the old static "Private on this device" badge. Open Records to see the current cloud and finance publication state; open Backup → Get device ID / Check connection to trigger a fresh check. The paid-utility publication message includes the actual number and total pesos of paid entries written to Firebase. This does not itself prove that Rico Finances AI's device is authorized to read them. Confirm that in Rico Finances AI → Cash Flow → Paid Home Utilities.
+
 v1.6.4 — Paid/Unpaid isolation and reliable Rico Finances AI link.
 
 Before updating, download your Home Utilities JSON backup in Backup → Protect your data. Then install the update through Check Updates. Existing utility entries and their Paid/Unpaid values are preserved. If older imports contain duplicate record IDs, the app will assign distinct IDs to later copies without changing bill amounts or status. After opening the updated app online, go to Backup → Get device ID / Check connection to confirm cloud sync, and check that the Finance link status says paid utilities are synced. In Rico Finances AI, expand Paid Home Utilities and confirm Live Firebase sync and current totals. If a Firebase permission error is shown, verify the published project rules; repository rules are not automatically deployed to Firebase.
