@@ -16,7 +16,7 @@ source=source.replace("import { buildFinancePaidSnapshot } from './utility-finan
   'const buildFinancePaidSnapshot=()=>({schema:1,source:"test",entries:[]});');
 source=source.replace('export function createSync(', 'function createSync(');
 source=source.replace(
-  /const \\[app, auth, db\\] = await Promise\\.all\\(\\[[\\s\\S]*?\\]\\);/,
+  /const \[app, auth, db\] = await Promise\.all\(\[[\s\S]*?\]\);/,
   'const [app, auth, db] = globalThis.__mockSDK;'
 );
 assert(!source.includes("import(sdk + 'firebase-app.js')"),'SDK should be mocked');
