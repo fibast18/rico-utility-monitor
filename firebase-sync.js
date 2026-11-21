@@ -133,7 +133,10 @@ export function createSync({ read, baseline, persist, display }) {
       }
       lastFinancePublished=fingerprint;
       financePublishSucceeded=true;
-      financeStatus='Paid Home Utilities are synced with Rico Finances AI (read-only).';
+      const paidTotal=summary.entries.reduce((sum,entry)=>sum+entry.amount,0);
+      financeStatus='Paid utility summary published to Firebase: '+summary.entries.length+
+        ' paid entries · ₱'+paidTotal.toLocaleString('en-PH',{minimumFractionDigits:2,maximumFractionDigits:2})+
+        '. Rico Finances AI must also have an authorized read-only connection ID.';
       show();
       return true;
     } catch(error) {
