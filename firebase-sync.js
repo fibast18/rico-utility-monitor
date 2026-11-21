@@ -13,9 +13,24 @@ const sdk = 'https://www.gstatic.com/firebasejs/13.4.0/';
 const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 const camellaKey = row => row.autoMonthly ? 'auto:' + row.date.slice(0, 7) : 'row:' + row.id;
 
+// Never let Map silently discard an imported bill with a duplicate legacy ID.
+// Mirror index.html's deterministic ID repair without modifying input records
+// until a successful cloud transaction has saved the reconciled documents.
+function uniqueRecords(records) {
+  const all = new Set(records.map(row => String(row.id))), seen = new Set();
+  return records.map(row => {
+    const original=String(row.id);
+    if(!seen.has(original)) {seen.add(original);return row;}
+    let suffix=2,replacement='';
+    do {replacement=original.slice(0,90)+'-duplicate-'+suffix++;} while(all.has(replacement));
+    all.add(replacement);seen.add(replacement);
+    return {...row,id:replacement};
+  });
+}
+
 function entries(data) {
   return new Map([
-    ...data.records.map(row => ['record/' + row.id, row]),
+    ...uniqueRecords(data.records).map(row => ['record/' + row.id, row]),
     ...data.dailyReadings.map(row => ['meter/' + row.date, row]),
     ...data.camellaDues.entries.map(row => ['camella/' + camellaKey(row), row]),
     ...Object.entries(data.cogeaCbuOverrides).map(([date, amount]) => ['cogea/' + date, amount]),
@@ -55,6 +70,7 @@ export function createSync({ read, baseline, persist, display }) {
   let remoteChanged = false;
   let financeStatus = 'For Rico Finances AI, authorize its connection ID once in this app.';
   let lastFinancePublished = '';
+  let financePublishSucceeded = false;
 
   function show(text = message) {
     message = text;
@@ -95,24 +111,40 @@ export function createSync({ read, baseline, persist, display }) {
     return state;
   }
 
+  // Publish only a minimal paid-expense snapshot, never full utility records.
+  // Re-read the *server* summary on each confirmed source sync. Otherwise a
+  // second household device can overwrite the snapshot while this app keeps
+  // incorrectly assuming its last in-memory fingerprint is still published.
   async function publishPaidSummary(cloud) {
-    if(!cloud)return;
+    if(!cloud)return false;
     try {
       const summary=buildFinancePaidSnapshot(cloud);
       const fingerprint=JSON.stringify(summary);
-      if(fingerprint===lastFinancePublished)return;
       const {db,store}=await connect();
-      await db.setDoc(db.doc(store,'household','financePaidUtilities'),{
-        ...summary,updatedAt:new Date().toISOString()
-      });
+      const ref=db.doc(store,'household','financePaidUtilities');
+      const published=await db.getDocFromServer(ref);
+      const old=published.exists()?published.data():null;
+      const previous=old?JSON.stringify({
+        schema:old.schema,source:old.source,entries:old.entries,
+        dateBasis:old.dateBasis
+      }):'';
+      if(previous!==fingerprint){
+        await db.setDoc(ref,{...summary,updatedAt:new Date().toISOString()});
+      }
       lastFinancePublished=fingerprint;
-      financeStatus='Paid utilities are available for authorized Finances devices (read-only).';
+      financePublishSucceeded=true;
+      financeStatus='Paid Home Utilities are synced with Rico Finances AI (read-only).';
       show();
+      return true;
     } catch(error) {
-      // Never fail, roll back or overwrite the original Firebase household sync.
-      financeStatus='Finance link pending: '+(error.code==='permission-denied'?
-        'publish the updated Firestore rules once.':String(error.message||error).slice(0,130));
+      financePublishSucceeded=false;
+      const code=String(error?.code||'');
+      financeStatus='Paid bills NOT linked to Rico Finances AI: '+
+        (code==='permission-denied'
+          ? 'Firebase refused summary access. Publish the updated Firestore rules; utility cloud sync remains separate.'
+          : String(error?.message||error).slice(0,155));
       show();
+      return false;
     }
   }
 
@@ -226,9 +258,14 @@ export function createSync({ read, baseline, persist, display }) {
         });
       }
       if(cloud)await publishPaidSummary(cloud);
-      show(baseline ? 'Connected. Changes sync automatically while online.' :
-        hasCloud ? 'Cloud records are available. Join only after backing up this device.' :
-        'Authorized. Back up this device before starting the first upload.');
+      show(financePublishSucceeded
+        ? (baseline ? 'Connected. Utility changes sync automatically; paid bills also sync to Finances.' :
+            'Cloud authorization ready. Paid bills will sync when the household records are available.')
+        : financeStatus.startsWith('Paid bills NOT linked')
+          ? 'Utility cloud sync connected, but '+financeStatus
+          : (baseline ? 'Connected. Changes sync automatically while online.' :
+             hasCloud ? 'Cloud records are available. Join only after backing up this device.' :
+             'Authorized. Back up this device before starting the first upload.'));
     } catch (error) {
       report(error);
     } finally {
