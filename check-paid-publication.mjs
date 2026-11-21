@@ -33,21 +33,11 @@ const status=[];
 const fakeDb={
  getFirestore:()=>({}),
  doc:(_store,...parts)=>parts.join('/'),
- async getDocFromServer(path){
-  assert.equal(path,'household/financePaidUtilities');
-  return {exists:()=>financeDoc!==null,data:()=>structuredClone(financeDoc)};
- },
- async setDoc(path,data){
-  assert.equal(path,'household/financePaidUtilities',
-   'Paid summary writer must never overwrite full utility records');
-  if(failPaidSummary)throw Object.assign(Error('simulated permission issue'),{code:'permission-denied'});
-  financeDoc=structuredClone(data);
-  financeWrites++;
- },
  async runTransaction(_store,fn){
   const changes=[];
   const tx={
    async get(path){
+    if(path==='household/financePaidUtilities')return {exists:()=>financeDoc!==null,data:()=>structuredClone(financeDoc)};
     assert.equal(path,'household/utilities');
     return {exists:()=>true,data:()=>({schema:1,payload:JSON.stringify(cloud)})};
    },
@@ -55,6 +45,12 @@ const fakeDb={
   };
   const returned=await fn(tx);
   for(const change of changes){
+   if(change.path==='household/financePaidUtilities'){
+    if(failPaidSummary)throw Object.assign(Error('simulated permission issue'),{code:'permission-denied'});
+    financeDoc=structuredClone(change.value);
+    financeWrites++;
+    continue;
+   }
    assert.equal(change.path,'household/utilities');
    cloud=JSON.parse(change.value.payload);
   }
