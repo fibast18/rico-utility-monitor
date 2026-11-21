@@ -1,3 +1,11 @@
+Rico's Integrated Home Utilities v1.6.4 — Independent Paid/Unpaid records and Finance sync
+
+- Keeps each utility bill's payment status independent; older duplicate record IDs are assigned stable distinct identifiers without changing dates, amounts, or Paid/Unpaid values.
+- Prevents Firebase's per-record merge from dropping or overwriting separate bills with duplicate legacy IDs.
+- Rechecks and republishes the minimal paid-utilities snapshot when it differs from the server, including when another device has updated the summary.
+- Shows a clear warning if paid bills were NOT published to Rico Finances AI, while preserving normal utility records and offline operation.
+- Adds regression checks for separate bill payment statuses, multi-device reconciliation, finance publishing and permission errors.
+
 Rico's Integrated Home Utilities v1.6.3 — Read-only Rico Finances AI integration
   
 - Fixes the read-only device authorization button silently doing nothing if Firebase was still initializing.
