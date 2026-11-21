@@ -1,4 +1,5 @@
-v1.6.2 — Read-only paid utilities linking to Rico Finances AI.
+v1.6.3 — Read-only paid utilities linking to Rico Finances AI.
+After updating Home Utilities, paste the Finances connection ID and press Authorize read-only device. The button now reports "Authorizing...", "Success!", "Already authorized", or the exact blocking status below the button. If Firebase denies approval, confirm this Home Utilities installation is authorized and that the latest firestore.rules are published.
 
 SETUP: First open Firebase Console → rico-home-utilities → Firestore Database → Rules. Replace the rules with the updated firestore.rules from this GitHub repository, and publish them. This preserves current utility editors and introduces a finance_viewer role that can read only household/financePaidUtilities, NOT household/utilities.
 
