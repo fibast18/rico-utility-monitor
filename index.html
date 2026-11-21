@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#12213a">
-<title>Rico's Integrated Home Utilities | v1.6.2</title>
-<meta name="app-version" content="1.6.2">
+<title>Rico's Integrated Home Utilities | v1.6.3</title>
+<meta name="app-version" content="1.6.3">
 <meta name="description" content="Private household utility and fuel expense tracker for water, electricity, car, motorcycle and LPG.">
 <meta name="apple-mobile-web-app-title" content="Rico Utilities">
 <meta name="application-name" content="Rico's Integrated Home Utilities">
@@ -133,7 +133,7 @@ body{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;paddi
 </div>
 <main class="shell">
 <div id="app"></div>
-<footer class="app-footer" aria-label="Application information"><span class="developer-credit">Developed by: Engr. Rico J. Pono</span><span class="footer-release"><span>Rico's Integrated Home Utilities</span><span id="appVersion">Version 1.6.2</span></span></footer>
+<footer class="app-footer" aria-label="Application information"><span class="developer-credit">Developed by: Engr. Rico J. Pono</span><span class="footer-release"><span>Rico's Integrated Home Utilities</span><span id="appVersion">Version 1.6.3</span></span></footer>
 </main>
 <!-- v1.3.4: Private Ask Rico Cloudflare Worker chat. No OpenAI API key is present in this public page. -->
 <section id="ricoChatPanel" class="rico-chat-panel" role="dialog" aria-label="Ask Rico paid AI chat" aria-modal="false" hidden>
@@ -170,7 +170,7 @@ body{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;paddi
 <div id="toast" class="message" role="status" aria-live="polite"></div>
 <script>
 (()=>{'use strict';
-const APP_VERSION='1.6.2';
+const APP_VERSION='1.6.3';
 const appBar=document.getElementById('fixedAppBar');
 function syncAppBarHeight(){if(appBar)document.documentElement.style.setProperty('--app-bar-height',Math.ceil(appBar.getBoundingClientRect().height)+'px')}
 syncAppBarHeight();
@@ -677,36 +677,82 @@ window.addEventListener('offline',()=>{if(!ricoEl('ricoChatPanel').hidden)ricoUp
 window.addEventListener('online',()=>{if(!ricoEl('ricoChatPanel').hidden)ricoShowScreen()});
 ricoReadSession();
 
-document.addEventListener('click',e=>{const b=e.target.closest('[data-page],[data-action],[data-ai-tab],[data-calc-tab]');if(!b)return;if(b.dataset.calcTab){calcTab=b.dataset.calcTab;render();return}if(b.dataset.aiTab){aiTab=b.dataset.aiTab;render();return}if(b.dataset.page){if(b.dataset.page==='add')editId=null;go(b.dataset.page);return}const a=b.dataset.action,key=b.dataset.id;switch(a){case 'new':editId=null;go('add');break;case 'view-records':go('records');break;case 'view-backup':go('backup');break;case 'cancel':editId=null;go('records');break;case 'edit':editId=key;go('add');break;case 'delete':{const r=db.records.find(x=>x.id===key);if(r&&confirm(`Delete ${TYPES[r.type].name} record from ${dateLabel(r.date)} (${money(r.amount)})?`)){const before=db.records;db.records=db.records.filter(x=>x.id!==key);if(!save()){db.records=before;return}render();notice('Record deleted')}break}case 'toggle-paid':{const r=db.records.find(x=>x.id===key);if(r){const old=r.status;r.status=old==='paid'?'unpaid':'paid';r.updatedAt=new Date().toISOString();if(!save()){r.status=old;return}render();notice('Payment status updated')}break}case 'open-calculations':go('calculations');break;case 'cbu-save':saveCbuCashIn(b.dataset.date);break;case 'hoa-edit':hoaEditId=key;render();break;case 'hoa-cancel':hoaEditId=null;render();break;case 'hoa-delete':{const r=db.camellaDues.entries.find(x=>x.id===key);if(r&&confirm(`Delete Camella row dated ${dateLabel(r.date)}? This will recalculate later balances.`)){const before=db.camellaDues.entries;db.camellaDues.entries=before.filter(x=>x.id!==key);if(!save()){db.camellaDues.entries=before;return}if(hoaEditId===key)hoaEditId=null;render();notice('Camella row deleted')}break}case 'export-hoa':exportHoaCSV();break;case 'import-daily':importDailyCSV();break;case 'export-daily':exportDailyCSV();break;case 'delete-daily':deleteDaily(b.dataset.date);break;case 'ai-example':aiQuestion=b.dataset.question||'';aiNativeText='';aiTab='ask';render();askAI();break;case 'ai-clear':aiQuestion='';aiResponse='';aiNativeText='';render();break;case 'ai-native':explainWithNative();break;case 'ai-refresh':render();notice('Alerts refreshed from saved records');break;case 'prepare-offline':prepareOffline(true);break;case 'check-updates':checkForUpdates();break;case 'apply-update':applyAvailableUpdate();break;case 'export-json':exportJSON();break;case 'export-csv':exportCSV();break;case 'firebase-check':sync?.check();break;case 'firebase-start':sync?.start();break;case 'finance-grant':sync?.grantFinanceReader($('#financeReaderDeviceId')?.value);break;case 'import-json':if(syncBaseline&&$('#importMode')?.value==='replace'){alert('Use Merge to restore a backup while cloud sync is enabled.');break}importJSON();break;case 'clear':if(syncBaseline){alert('The device-wide erase control is disabled while cloud sync is enabled.');break}eraseAll();break}});
-render();
-if(storageHealthy){
-  import('./firebase-sync.js').then(({createSync})=>{
-    sync=createSync({
-      read:()=>structuredClone(db),
-      baseline:syncBaseline,
-      persist:(next,baseline)=>{
-        localStorage.setItem(KEY,JSON.stringify({...next,firebaseSyncBaseline:baseline}));
-        const changed=JSON.stringify(db)!==JSON.stringify(next);
-        db=next;
-        syncBaseline=baseline;
-        if(changed&&page==='overview')render();
-      },
-      display:({device,message,busy,allowStart,hasCloud,financeStatus})=>{
-        const status=$('#firebaseSyncStatus');
-        if(!status)return;
-        status.textContent=message;
-        const finance=$('#firebaseFinanceStatus');if(finance)finance.textContent=financeStatus;
-        $('#firebaseDeviceId').textContent=device;
-        $('#firebaseDeviceLabel').hidden=!device;
-        $('#firebaseSyncCheck').disabled=busy;
-        const start=$('#firebaseSyncStart');
-        start.hidden=!allowStart;
-        start.disabled=busy;
-        start.textContent=hasCloud?'Join shared records':'Upload this device’s records';
-      }
-    });
-  }).catch(()=>{const status=$('#firebaseSyncStatus');if(status)status.textContent='Sync controls are unavailable. Reopen the app online.';});
-}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-page],[data-action],[data-ai-tab],[data-calc-tab]');if(!b)return;if(b.dataset.calcTab){calcTab=b.dataset.calcTab;render();return}if(b.dataset.aiTab){aiTab=b.dataset.aiTab;render();return}if(b.dataset.page){if(b.dataset.page==='add')editId=null;go(b.dataset.page);return}const a=b.dataset.action,key=b.dataset.id;switch(a){case 'new':editId=null;go('add');break;case 'view-records':go('records');break;case 'view-backup':go('backup');break;case 'cancel':editId=null;go('records');break;case 'edit':editId=key;go('add');break;case 'delete':{const r=db.records.find(x=>x.id===key);if(r&&confirm(`Delete ${TYPES[r.type].name} record from ${dateLabel(r.date)} (${money(r.amount)})?`)){const before=db.records;db.records=db.records.filter(x=>x.id!==key);if(!save()){db.records=before;return}render();notice('Record deleted')}break}case 'toggle-paid':{const r=db.records.find(x=>x.id===key);if(r){const old=r.status;r.status=old==='paid'?'unpaid':'paid';r.updatedAt=new Date().toISOString();if(!save()){r.status=old;return}render();notice('Payment status updated')}break}case 'open-calculations':go('calculations');break;case 'cbu-save':saveCbuCashIn(b.dataset.date);break;case 'hoa-edit':hoaEditId=key;render();break;case 'hoa-cancel':hoaEditId=null;render();break;case 'hoa-delete':{const r=db.camellaDues.entries.find(x=>x.id===key);if(r&&confirm(`Delete Camella row dated ${dateLabel(r.date)}? This will recalculate later balances.`)){const before=db.camellaDues.entries;db.camellaDues.entries=before.filter(x=>x.id!==key);if(!save()){db.camellaDues.entries=before;return}if(hoaEditId===key)hoaEditId=null;render();notice('Camella row deleted')}break}case 'export-hoa':exportHoaCSV();break;case 'import-daily':importDailyCSV();break;case 'export-daily':exportDailyCSV();break;case 'delete-daily':deleteDaily(b.dataset.date);break;case 'ai-example':aiQuestion=b.dataset.question||'';aiNativeText='';aiTab='ask';render();askAI();break;case 'ai-clear':aiQuestion='';aiResponse='';aiNativeText='';render();break;case 'ai-native':explainWithNative();break;case 'ai-refresh':render();notice('Alerts refreshed from saved records');break;case 'prepare-offline':prepareOffline(true);break;case 'check-updates':checkForUpdates();break;case 'apply-update':applyAvailableUpdate();break;case 'export-json':exportJSON();break;case 'export-csv':exportCSV();break;case 'firebase-check':sync?.check();break;case 'firebase-start':sync?.start();break;case 'finance-grant':authorizeFinanceDevice();break;case 'import-json':if(syncBaseline&&$('#importMode')?.value==='replace'){alert('Use Merge to restore a backup while cloud sync is enabled.');break}importJSON();break;case 'clear':if(syncBaseline){alert('The device-wide erase control is disabled while cloud sync is enabled.');break}eraseAll();break}});
+ // Make the Finances approval button always respond, including when Firebase
+ // is still loading or its optional module failed to load on an offline iPhone.
+ let firebaseSyncPromise=null;
+ function financeFeedback(text){
+   const node=$('#firebaseFinanceStatus');
+   if(node)node.textContent=text;
+   else notice(text);
+ }
+ async function initializeFirebaseSync(){
+   if(sync)return sync;
+   if(!storageHealthy)throw Error('Local utility records could not be loaded safely. Restore your backup before authorizing another device.');
+   if(!firebaseSyncPromise){
+     firebaseSyncPromise=import('./firebase-sync.js').then(({createSync})=>{
+       sync=createSync({
+         read:()=>structuredClone(db),
+         baseline:syncBaseline,
+         persist:(next,baseline)=>{
+           localStorage.setItem(KEY,JSON.stringify({...next,firebaseSyncBaseline:baseline}));
+           const changed=JSON.stringify(db)!==JSON.stringify(next);
+           db=next;
+           syncBaseline=baseline;
+           if(changed&&page==='overview')render();
+         },
+         display:({device,message,busy,allowStart,hasCloud,financeStatus})=>{
+           const status=$('#firebaseSyncStatus');
+           if(!status)return;
+           status.textContent=message;
+           const finance=$('#firebaseFinanceStatus');
+           if(finance)finance.textContent=financeStatus;
+           const id=$('#firebaseDeviceId'),idContainer=$('#firebaseDeviceLabel');
+           if(id)id.textContent=device;
+           if(idContainer)idContainer.hidden=!device;
+           const check=$('#firebaseSyncCheck');if(check)check.disabled=busy;
+           const start=$('#firebaseSyncStart');
+           if(start){
+             start.hidden=!allowStart;
+             start.disabled=busy;
+             start.textContent=hasCloud?'Join shared records':'Upload this device’s records';
+           }
+         }
+       });
+       return sync;
+     }).catch(error=>{firebaseSyncPromise=null;throw error;});
+   }
+   return firebaseSyncPromise;
+ }
+ async function authorizeFinanceDevice(){
+   const button=document.querySelector('[data-action="finance-grant"]');
+   const id=$('#financeReaderDeviceId')?.value?.trim()||'';
+   if(!id){financeFeedback('Paste the Finances connection ID before authorizing.');return;}
+   if(navigator.onLine===false){
+     financeFeedback('Connect to the internet before authorizing a read-only device.');
+     return;
+   }
+   financeFeedback('Connecting to Firebase to authorize this device…');
+   if(button){button.disabled=true;button.textContent='Authorizing…';}
+   try {
+     const controller=await initializeFirebaseSync();
+     await controller.grantFinanceReader(id);
+   } catch(error) {
+     financeFeedback('Unable to start authorization: '+String(error?.message||error).slice(0,180)+
+       '. Reopen Home Utilities while online and try again.');
+   } finally {
+     if(button){button.disabled=false;button.textContent='Authorize read-only device';}
+   }
+ }
+ render();
+ if(storageHealthy){
+   initializeFirebaseSync().catch(error=>{
+     const message='Sync controls unavailable: '+String(error?.message||error).slice(0,160)+
+       '. Reopen the app online, or retry Authorize.';
+     const status=$('#firebaseSyncStatus');if(status)status.textContent=message;
+     financeFeedback(message);
+   });
+ }
 })();
 </script>
 </body>
