@@ -27,10 +27,11 @@ service cloud.firestore {
     match /household/financePaidUtilities {
       allow get: if active();
       allow create, update: if writer()
-        && request.resource.data.keys().hasOnly(['schema', 'source', 'updatedAt', 'entries'])
+        && request.resource.data.keys().hasOnly(['schema', 'source', 'updatedAt', 'entries', 'dateBasis'])
         && request.resource.data.schema == 1
         && request.resource.data.source == 'rico-utility-monitor'
         && request.resource.data.updatedAt is string
+        && request.resource.data.dateBasis == 'bill-or-record-date'
         && request.resource.data.entries is list
         && request.resource.data.entries.size() <= 3500;
     }
