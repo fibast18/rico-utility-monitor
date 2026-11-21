@@ -1,3 +1,8 @@
+Rico's Integrated Home Utilities v1.6.6 — Keep bill payment status during sync
+
+- Preserve payment status when another device edits other fields of the same bill.
+- Publish the Finances summary from the latest committed utility records in a Firestore transaction.
+
 Rico's Integrated Home Utilities v1.6.5 — Live payment statuses and real sync diagnostics
 
 - Redraws Records immediately after Firebase reconciles a changed bill, preventing stale Paid/Unpaid badges from remaining visible.

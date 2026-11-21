@@ -43,6 +43,19 @@ function merge(base, local, remote) {
   for (const key of new Set([...prior.keys(), ...mine.keys()])) {
     if (same(prior.get(key), mine.get(key))) continue;
     if (key.startsWith('camella/auto:') && !prior.has(key) && merged.has(key)) continue;
+    if (key.startsWith('record/') && prior.has(key) && mine.has(key) && merged.has(key)) {
+      const before = prior.get(key), localRow = mine.get(key), cloudRow = merged.get(key);
+      const next = { ...cloudRow };
+      for (const field of Object.keys(localRow)) {
+        if (field === 'updatedAt' || same(before[field], localRow[field])) continue;
+        if (field === 'status' && !same(before.status, cloudRow.status) &&
+            Date.parse(cloudRow.updatedAt) > Date.parse(localRow.updatedAt)) continue;
+        next[field] = localRow[field];
+      }
+      if (Date.parse(localRow.updatedAt) > Date.parse(cloudRow.updatedAt)) next.updatedAt = localRow.updatedAt;
+      merged.set(key, next);
+      continue;
+    }
     if (mine.has(key)) merged.set(key, mine.get(key));
     else merged.delete(key);
   }
@@ -118,19 +131,20 @@ export function createSync({ read, baseline, persist, display }) {
   async function publishPaidSummary(cloud) {
     if(!cloud)return false;
     try {
-      const summary=buildFinancePaidSnapshot(cloud);
-      const fingerprint=JSON.stringify(summary);
-      const {db,store}=await connect();
+      const {db,store,ref: utilityRef}=await connect();
       const ref=db.doc(store,'household','financePaidUtilities');
-      const published=await db.getDocFromServer(ref);
-      const old=published.exists()?published.data():null;
-      const previous=old?JSON.stringify({
-        schema:old.schema,source:old.source,entries:old.entries,
-        dateBasis:old.dateBasis
-      }):'';
-      if(previous!==fingerprint){
-        await db.setDoc(ref,{...summary,updatedAt:new Date().toISOString()});
-      }
+      const summary=await db.runTransaction(store,async transaction=>{
+        const current=decode(await transaction.get(utilityRef));
+        if(!current)throw Error('Cloud utility records are missing.');
+        const next=buildFinancePaidSnapshot(current);
+        const published=await transaction.get(ref);
+        const old=published.exists()?published.data():null;
+        if(!old||!same({
+          schema:old.schema,source:old.source,entries:old.entries,dateBasis:old.dateBasis
+        },next))transaction.set(ref,{...next,updatedAt:new Date().toISOString()});
+        return next;
+      });
+      const fingerprint=JSON.stringify(summary);
       lastFinancePublished=fingerprint;
       financePublishSucceeded=true;
       const paidTotal=summary.entries.reduce((sum,entry)=>sum+entry.amount,0);
