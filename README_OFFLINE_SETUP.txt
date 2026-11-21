@@ -1,3 +1,5 @@
+v1.6.1 — Camella HOA history centers the OR Difference column.
+
 v1.6.0 — Optional Firebase Device Sync
 
 Before enabling sync, publish firestore.rules in the dedicated rico-home-utilities Firestore project and enable Firebase Anonymous Authentication.
@@ -12,7 +14,7 @@ v1.5.2: Removes the GitHub Pages hosting section from Backup. The existing erase
 
 v1.5.1 (cumulative): Removes the prohibited Cash Out column and makes each COGEA Cash In editable with ₱1,000 as the default. Enter the full COGEA-reported amount when interest is added; later balances recalculate and stop at ₱25,000. Adjustments persist and are included in JSON backup/restore. After GitHub deployment, use Backup > Check Updates and Update Now.
 
-Rico's Integrated Home Utilities – Smart Solutions v1.6.0
+Rico's Integrated Home Utilities – Smart Solutions v1.6.1
 
 UPLOAD THE APP FILES into the same GitHub Pages repository directory:
 - index.html
