@@ -1,3 +1,10 @@
+Rico's Integrated Home Utilities v1.6.2 — Read-only Rico Finances AI integration
+
+- Publishes only paid electricity, water, fuel, LPG and recorded Camella dues payments to a separate Firebase summary document. Unpaid bills, notes, meter readings and COGEA savings are excluded.
+- Adds Backup → Connect Rico Finances AI for one-time authorization of a finance_viewer device ID. Finance viewers cannot read or edit the full utilities document once updated firestore.rules are deployed.
+- Keeps the original localStorage and Firebase household schema unchanged, with offline functionality intact.
+- IMPORTANT: Deploy the updated firestore.rules in Firebase Console before approving any finance viewer. Existing household authorizations continue to work.
+
 Rico's Integrated Home Utilities v1.6.1 — Camella history alignment
 
 - Centers the OR Difference heading and values in Camella HOA history.
