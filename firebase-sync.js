@@ -116,33 +116,57 @@ export function createSync({ read, baseline, persist, display }) {
     }
   }
 
+  // The button must never silently exit. Verify this device is an authorized
+  // household writer on every approval request, then create *only* the viewer role.
+  // Repeat taps return "Already approved" instead of trying an update forbidden
+  // by the least-privilege Firestore rules.
   async function grantFinanceReader(uid) {
     const id=String(uid||'').trim();
     if(!/^[A-Za-z0-9_-]{10,160}$/.test(id)){
-      financeStatus='Paste the Finances connection ID from its Cash Flow tab.';
-      show();return;
+      financeStatus='Enter a valid Finances connection ID (not the Home Utilities device ID).';
+      show();return false;
     }
-    if(id===device){
-      financeStatus='The Finances ID must be different from this Home Utilities device ID.';
-      show();return;
+    if(navigator.onLine===false){
+      financeStatus='Internet is required to approve a Finances device. Reconnect and tap Authorize again.';
+      show();return false;
     }
-    if(!authorized){
-      financeStatus='Check your Home Utilities Firebase connection first.';
-      show();return;
-    }
-    try {
-      const {db,store}=await connect();
-      // Firestore security rules allow only CREATE of finance_viewer memberships.
-      // An existing household device cannot be overwritten by this action.
-      await db.setDoc(db.doc(store,'authorizedDevices',id),{
-        enabled:true,role:'finance_viewer',addedAt:new Date().toISOString()
-      });
-      financeStatus='Finances connection approved. Open Rico Finances AI to complete sync.';
-    } catch(error) {
-      financeStatus='Approval failed: '+(error.code==='permission-denied'?
-        'deploy the updated Firestore rules, then try again.':String(error.message||error).slice(0,125));
-    }
+    financeStatus='Checking Home Utilities authorization…';
     show();
+    try {
+      const {db,store,ref}=await connect();
+      if(id===device){
+        financeStatus='The Finances ID must be different from this Home Utilities device ID.';
+        show();return false;
+      }
+      // Firestore GET is restricted to existing household writers. A finance
+      // viewer cannot authorize another device, even if it calls this function.
+      await db.getDocFromServer(ref);
+      authorized=true;
+      const target=db.doc(store,'authorizedDevices',id);
+      const existing=await db.getDocFromServer(target);
+      if(existing.exists()){
+        const member=existing.data()||{};
+        financeStatus=member.enabled===true&&member.role==='finance_viewer'
+          ? 'Already authorized! Open Rico Finances AI → Linked Utilities → Connect now.'
+          : 'This ID already belongs to a different account. No existing permissions were changed.';
+        show();
+        return member.enabled===true&&member.role==='finance_viewer';
+      }
+      financeStatus='Authorizing read-only Finances device…';
+      show();
+      await db.setDoc(target,{enabled:true,role:'finance_viewer',
+        addedAt:new Date().toISOString()});
+      financeStatus='Success! Read-only device authorized. Open Rico Finances AI → Linked Utilities → Connect now.';
+      show();return true;
+    } catch(error) {
+      const code=String(error?.code||'');
+      financeStatus='Approval failed: '+(code==='permission-denied'
+        ? 'Firebase denied access. Confirm this Home Utilities device is authorized and the updated Firestore rules are published.'
+        : code==='unavailable'
+          ? 'Firebase is unavailable. Check the internet connection and try again.'
+          : String(error?.message||error||'Unknown Firebase error').slice(0,160));
+      show();return false;
+    }
   }
 
   async function run(mode, expected) {
