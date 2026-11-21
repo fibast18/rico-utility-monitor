@@ -1,3 +1,7 @@
+Rico's Integrated Home Utilities v1.6.1 — Camella history alignment
+
+- Centers the OR Difference heading and values in Camella HOA history.
+
 Rico's Integrated Home Utilities v1.6.0 — Optional Firebase Device Sync
 
 - Adds Device Sync under Backup. Each installation uses a background Firebase identity and requires owner authorization.
